@@ -6,7 +6,7 @@
 |-----------------|-------------------|--------|---------------|
 | serv-mech-web   | Angular           | 4200   | Interfaz web  |
 | serv-mech-api   | Python            | 8000   | FAST API      |
-| ser-mech-db     | PostgreSQL        | 5432   | Base de datos |
+| serv-mech-db     | PostgreSQL        | 5432   | Base de datos |
 
 ---
 
@@ -41,7 +41,7 @@ docker compose down -v
 1. **En VSCode**  
    Abrir `mechanic-api` o `mechanic-web`.
 
-2. **En otra ventana Ejecutar la base de datos (solo para finance-api)**  
+2. **En otra ventana Ejecutar la base de datos (solo para mechanic-api)**  
 
    ```bash
    docker compose up --build serv-mech-db
@@ -54,7 +54,7 @@ docker compose down -v
 - En `mechanic-api`
 
    ```bash
-   uvicorn app.main:app  ---reload
+   uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
    ```
 - En `mechanic-web`
    ```bash
