@@ -46,6 +46,7 @@ services:
     depends_on:
       - serv-mech-api
     environment:
+      # enables file watching via polling (for live reload)
       CHOKIDAR_USEPOLLING: "true"
     ports:
       - "${FRONTEND_PORT}:4200"
@@ -62,6 +63,6 @@ volumes:
 
 networks:
   mechanic-net:
-    #explicit name
+    # custom network name (avoid auto-generated compose name)
     name: mechanic-system_mechanic-net
     driver: bridge

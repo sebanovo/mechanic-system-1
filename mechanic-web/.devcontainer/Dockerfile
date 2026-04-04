@@ -1,6 +1,6 @@
 FROM node:22-bookworm
 
-WORKDIR /workspace
+WORKDIR /mechanic-web
 
 # Basic tools for frontend development and debugging.
 RUN apt-get update && apt-get install -y --no-install-recommends \

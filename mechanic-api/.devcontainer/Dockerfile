@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Ensures Python logs are printed immediately in Docker.
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /workspace
+WORKDIR /mechanic-api
 
 # Basic tools for development:
 # - build-essential: compile native dependencies if needed
