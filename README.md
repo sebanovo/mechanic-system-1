@@ -64,6 +64,11 @@ docker compose down
 
 # Resetear base de datos
 docker compose down -v
+
+# Eliminar container, network, volumes sin uso
+docker container prune
+docker network prune
+docker volume prune
 ```
 
 ## 🧯 Ejecutar DevContainer en VSCode
