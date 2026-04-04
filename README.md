@@ -3,6 +3,35 @@
    <h1>Sistema de auxiliar mecanico</h1>
 </div>
 
+## 🏗 Estructura del proyecto
+
+backend `mechanic-api` desarrollado con FastAPI <br>
+Frontend `mechanic-web` en Angular.
+
+```
+mechanic-system/
+├── mechanic-api/              # Backend (FastAPI)
+│   ├── .devcontainer/         # Configuración para entorno de desarrollo
+│   │   ├── Dockerfile
+│   │   └── devcontainer.json
+│   ├── app/                   # Código principal de la API
+│   ├── requirements.txt       # Dependencias Python
+│   ├── Dockerfile.dev         # Imagen para desarrollo
+│   └── ...
+│
+├── mechanic-web/              # Frontend (Angular)
+│   ├── .devcontainer/         # Configuración para entorno de desarrollo
+│   ├── src/                   # Código fuente del frontend
+│   ├── Dockerfile.dev         # Imagen para desarrollo
+│   └── ...
+│
+├── .env                       # Variables de entorno (desarrollo)
+├── .env.sample                # Ejemplo de variables de entorno
+├── .env.prod                  # Variables de entorno para producción
+├── docker-compose.yml         # Orquestación para desarrollo
+└── README.md
+```
+
 ### Servicios (Docker)
 
 |    Servicio     | Tecnología        | Puerto | Descripción   |
@@ -15,7 +44,7 @@
 
 ### 🧯 Comandos Docker
 
-Ejecutar
+En la raiz jecutar
 ```bash
 cp .env.sample .env
 ```
