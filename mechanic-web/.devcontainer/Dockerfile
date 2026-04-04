@@ -1,4 +1,4 @@
-FROM node:22-bookworm
+FROM mcr.microsoft.com/devcontainers/javascript-node:20
 
 WORKDIR /mechanic-web
 
@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+
+# Angular CLI global
+RUN npm install -g @angular/cli
 
 # Keep the container alive for VS Code remote development.
 CMD ["sleep", "infinity"]
