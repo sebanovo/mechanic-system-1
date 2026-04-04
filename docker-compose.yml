@@ -1,7 +1,7 @@
 services:
   serv-mech-db:
     image: postgres:16
-    container_name: mechanic-db
+
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -23,7 +23,7 @@ services:
     build:
       context: ./mechanic-api
       dockerfile: Dockerfile.dev
-    container_name: serv-mech-api
+
     restart: unless-stopped
     env_file:
       - .env
@@ -41,7 +41,7 @@ services:
     build:
       context: ./mechanic-web
       dockerfile: Dockerfile.dev
-    container_name: mechanic-web
+
     restart: unless-stopped
     depends_on:
       - serv-mech-api
