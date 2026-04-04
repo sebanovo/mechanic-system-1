@@ -1,4 +1,3 @@
-#  
 <div align="center">
    <h1>Sistema de auxiliar mecanico</h1>
 </div>
@@ -167,4 +166,4 @@ docker volume prune
 </div>
 <hr>
 
-last modified: 3/04/2026
+last modified: 4/04/2026
