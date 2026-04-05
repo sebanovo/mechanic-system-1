@@ -1,4 +1,35 @@
-#  Sistema de auxiliar mecanico
+<div align="center">
+   <h1>Sistema de auxiliar mecanico</h1>
+</div>
+
+## 🏗 Estructura del proyecto
+
+backend `mechanic-api` desarrollado con FastAPI <br>
+Frontend `mechanic-web` en Angular.
+
+```
+mechanic-system/
+├── mechanic-api/              # Backend (FastAPI)
+│   ├── .devcontainer/         # Configuración para entorno de desarrollo
+│   │   ├── Dockerfile
+│   │   └── devcontainer.json
+│   ├── app/                   # Código principal de la API
+│   ├── requirements.txt       # Dependencias Python
+│   ├── Dockerfile.dev         # Imagen para desarrollo
+│   └── ...
+│
+├── mechanic-web/              # Frontend (Angular)
+│   ├── .devcontainer/         # Configuración para entorno de desarrollo
+│   ├── src/                   # Código fuente del frontend
+│   ├── Dockerfile.dev         # Imagen para desarrollo
+│   └── ...
+│
+├── .env                       # Variables de entorno (desarrollo)
+├── .env.sample                # Ejemplo de variables de entorno
+├── .env.prod                  # Variables de entorno para producción
+├── docker-compose.yml         # Orquestación para desarrollo
+└── README.md
+```
 
 ### Servicios (Docker)
 
@@ -12,7 +43,7 @@
 
 ### 🧯 Comandos Docker
 
-Ejecutar
+En la raiz jecutar
 ```bash
 cp .env.sample .env
 ```
@@ -33,7 +64,7 @@ docker compose down
 # Resetear volumenes y base de datos
 docker compose down -v
 
-# Eliminar containers,networks, volumes no usados
+
 docker container prune
 docker network prune
 docker volume prune
@@ -67,4 +98,72 @@ docker volume prune
    ```
 - Listo !!!
 
-last modified: 3/04/2026
+<hr>
+
+<div align="center" width="100">
+  <h1>Stack</h1>
+  <!-- Languages -->
+  </br>
+  <h3>Languages and Frameworks</h3>
+	<img
+  		src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg"
+  		width="60px"
+  		alt="Python">
+	<img
+	  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/fastapi/fastapi-original.svg"
+	  width="60px"
+	  alt="FastAPI">
+	<img
+	  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/angularjs/angularjs-original.svg"
+	  width="60px"
+	  alt="Angular">
+  <img
+    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original-wordmark.svg"
+    width="60px"
+    alt="PostgreSQL">
+  <img
+    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original-wordmark.svg"
+    width="60px"
+    alt="HTML5">
+    &nbsp;&nbsp;&nbsp;&nbsp;
+  <img
+    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original-wordmark.svg"
+    width="60px"
+    alt="css3">
+    &nbsp;&nbsp;&nbsp;&nbsp;
+  <img
+    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg"
+    width="60px"
+    alt="Tailwind CSS">
+    <!-- Frameworks -->
+	
+  </br>
+    <!-- tools -->
+  </br>
+  <h3>Tools</h3>
+  <img
+    src="https://cdn.simpleicons.org/jira/0052CC"
+    width="55px"
+    alt="Jira">
+  <img
+    src="https://cdn.simpleicons.org/github/FFFFFF"
+    width="50px"
+    alt="GitHub Logo White">
+  <img
+    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original-wordmark.svg"
+    width="60px"
+    alt="Docker">
+    &nbsp;&nbsp;&nbsp;&nbsp;
+  <img
+    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original-wordmark.svg"
+    width="65px"
+    alt="Git Wordmark">
+  <img
+    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original-wordmark.svg"
+    width="60px"
+    alt="VS Code">
+    &nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+<hr>
+
+last modified: 4/04/2026

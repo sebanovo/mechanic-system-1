@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HealthCheckComponent } from './health-check.component';
+import { HealthCheckComponent } from './core/health-check/health-check.component';
 
 @Component({
   selector: 'app-root',
