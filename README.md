@@ -30,8 +30,13 @@ docker compose logs -f
 # Detener servicios
 docker compose down
 
-# Resetear base de datos
+# Resetear volumenes y base de datos
 docker compose down -v
+
+# Eliminar containers,networks, volumes no usados
+docker container prune
+docker network prune
+docker volume prune
 ```
 
 ## 🧯 Ejecutar DevContainer en VSCode
