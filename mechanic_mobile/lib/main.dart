@@ -224,7 +224,7 @@ class _ImagePickerExampleState extends State<ImagePickerExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Image Picker Híbrido')),
+      appBar: AppBar(title: const Text('Image Picker Híbrido 1011')),
       body: Center(
         child: _imageFile == null
             ? const Text('No hay imagen seleccionada')

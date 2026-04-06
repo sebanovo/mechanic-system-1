@@ -1,0 +1,28 @@
+{
+  "name": "Flutter Dev Environment",
+  "build": {
+    "context": "..",
+    "dockerfile": "Dockerfile"
+  },
+  "runArgs": [
+    "--network=mechanic-system_mechanic-net",
+    "--hostname=thunder"
+    // "--env-file=../.env.sample",
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dart-code.flutter",
+        "dart-code.dart"
+      ],
+      "settings": {
+        "flutter.hotReloadOnSave": "all",
+        "dart.hotReloadOnSave": "all",
+        "dart.flutterSdkPath": "/opt/flutter"
+      }
+    }
+  },
+  "remoteUser": "root",
+  "forwardPorts": [5200],
+  "postCreateCommand": "flutter pub get"
+}

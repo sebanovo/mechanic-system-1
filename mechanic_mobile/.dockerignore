@@ -1,0 +1,17 @@
+# Ignorar carpetas de compilación y temporales de Flutter
+build/
+.dart_tool/
+.pub-cache/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Ignorar archivos temporales de plataformas específicas
+android/
+ios/
+linux/
+macos/
+windows/
+
+# Ignorar logs y archivos del sistema
+.DS_Store
+*.log
