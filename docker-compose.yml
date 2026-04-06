@@ -57,6 +57,25 @@ services:
     networks:
       - mechanic-net
 
+  serv-mech-flutter:
+    build:
+      context: ./mechanic_mobile
+      dockerfile: Dockerfile.dev
+    container_name: serv-mech-flutter
+    volumes:
+      - ./mechanic_mobile:/app
+      - /app/.dart_tool # Evita conflictos de dependencias entre host y contenedor
+    ports:
+      - "5200:5200"
+    environment:
+      - CHROME_EXECUTABLE=/usr/bin/google-chrome # Por si usas tests
+    stdin_open: true # Importante para que flutter run no se cierre
+    tty: true
+    networks:
+      - mechanic-net
+    # depends_on:
+    #   - serv-mech-api
+
 volumes:
   mech_db_data:
   node_modules:
