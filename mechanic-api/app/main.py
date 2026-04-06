@@ -68,6 +68,7 @@ def create_application() -> FastAPI:
                 "version": settings.app_version,
                 "environment": settings.env_mode,
                 "docs_url": "/docs",
+                "redoc_url": "/redoc",
                 "health_url": f"{settings.api_v1_prefix}/system/health",
                 "readiness_url": f"{settings.api_v1_prefix}/system/readiness",
                 "info_url": f"{settings.api_v1_prefix}/system/info",
