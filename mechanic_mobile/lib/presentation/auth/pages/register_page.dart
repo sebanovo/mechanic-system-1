@@ -66,13 +66,17 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!mounted) return;
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registro exitoso. Ahora puedes ingresar.')),
+        const SnackBar(
+          content: Text('Registro exitoso. Ahora puedes ingresar.'),
+        ),
       );
       context.go('/login');
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(_authViewModel.errorMessage ?? 'Error de registro')),
+      SnackBar(
+        content: Text(_authViewModel.errorMessage ?? 'Error de registro'),
+      ),
     );
   }
 
@@ -126,7 +130,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 _textField(_lastNameController, 'Apellido'),
                 _textField(_phoneController, 'Telefono'),
                 DropdownButtonFormField<String>(
-                  value: _accountType,
+                  initialValue: _accountType,
                   decoration: const InputDecoration(
                     labelText: 'Tipo de cuenta',
                     border: OutlineInputBorder(),
@@ -137,7 +141,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       value: 'INDEPENDENT_MECHANIC',
                       child: Text('INDEPENDENT_MECHANIC'),
                     ),
-                    DropdownMenuItem(value: 'WORKSHOP', child: Text('WORKSHOP')),
+                    DropdownMenuItem(
+                      value: 'WORKSHOP',
+                      child: Text('WORKSHOP'),
+                    ),
                   ],
                   onChanged: (value) {
                     if (value != null) setState(() => _accountType = value);
