@@ -15,6 +15,7 @@ class _LoginPageState extends State<LoginPage> {
 
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _showPassword = false;
 
   @override
   void initState() {
@@ -63,11 +64,19 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Contraseña',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _showPassword ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() => _showPassword = !_showPassword);
+                    },
+                  ),
                 ),
-                obscureText: true,
+                obscureText: !_showPassword,
               ),
               const SizedBox(height: 24),
 
@@ -93,6 +102,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   );
                 },
+              ),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () => context.go('/register'),
+                child: const Text('No tienes cuenta? Registrate'),
               ),
             ],
           ),

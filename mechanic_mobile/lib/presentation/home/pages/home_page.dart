@@ -27,6 +27,12 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Mis Solicitudes'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.directions_car),
+            onPressed: () {
+              context.push('/vehicles');
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
               // Should call auth.logout() but for now just navigate back explicitly
