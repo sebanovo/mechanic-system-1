@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -41,6 +42,9 @@ class Settings(BaseSettings):
     initial_platform_admin_last_name: str = "Admin"
     initial_platform_admin_phone: str | None = "70000001"
 
+    local_storage_root: str = "/app/storage"
+    max_upload_size_bytes: int = 10 * 1024 * 1024
+
     @property
     def database_url(self) -> str:
         return (
@@ -56,6 +60,10 @@ class Settings(BaseSettings):
             return ["*"]
 
         return [origin.strip() for origin in value.split(",") if origin.strip()]
+
+    @property
+    def storage_root_path(self) -> Path:
+        return Path(self.local_storage_root).resolve()
 
 
 @lru_cache

@@ -36,14 +36,14 @@ services:
         condition: service_healthy
     networks:
       - mechanic-net
-      
+
     healthcheck:
       test:
         [
           "CMD",
           "python",
           "-c",
-          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/system/health', timeout=5).read()"
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/system/health', timeout=5).read()",
         ]
       interval: 15s
       timeout: 5s
