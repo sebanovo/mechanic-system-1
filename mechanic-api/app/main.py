@@ -12,6 +12,7 @@ from app.core.logging_config import configure_logging
 from app.services.auth.router import router as auth_router
 from app.services.evidences.router import router as evidences_router
 from app.services.incidents.router import router as incidents_router
+from app.services.jobs.router import router as jobs_router
 from app.services.providers.router import router as providers_router
 from app.services.system.router import router as system_router
 from app.services.users.router import router as users_router
@@ -60,6 +61,7 @@ def create_application() -> FastAPI:
     application.include_router(vehicles_router, prefix=settings.api_v1_prefix)
     application.include_router(incidents_router, prefix=settings.api_v1_prefix)
     application.include_router(evidences_router, prefix=settings.api_v1_prefix)
+    application.include_router(jobs_router, prefix=settings.api_v1_prefix)
 
     @application.get("/", tags=["Root"])
     def root() -> dict:
@@ -79,6 +81,7 @@ def create_application() -> FastAPI:
                 "vehicles_base_url": f"{settings.api_v1_prefix}/vehicles",
                 "incidents_base_url": f"{settings.api_v1_prefix}/incidents",
                 "evidences_base_url": f"{settings.api_v1_prefix}/evidences",
+                "jobs_base_url": f"{settings.api_v1_prefix}/jobs",
             },
         )
 

@@ -10,6 +10,7 @@ from app.services.providers import models as providers_models  # noqa: F401
 from app.services.vehicles import models as vehicles_models  # noqa: F401
 from app.services.incidents import models as incidents_models  # noqa: F401
 from app.services.evidences import models as evidences_models  # noqa: F401
+from app.services.jobs import models as jobs_models  # noqa: F401
 
 config = context.config
 

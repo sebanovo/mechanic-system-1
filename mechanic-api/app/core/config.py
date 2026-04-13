@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     postgres_password: str = "mechanic_password"
     postgres_port: int = 5432
 
+    redis_host: str = "serv-mech-redis"
+    redis_port: int = 6379
+    redis_db: int = 0
+
+    celery_default_queue: str = "default"
+
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
 
@@ -35,6 +41,27 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 60
 
     ai_provider: str = "null"
+    storage_provider: str = "local"
+    speech_to_text_provider: str = "null"
+    vision_provider: str = "null"
+    llm_provider: str = "null"
+    routing_provider: str = "null"
+    push_provider: str = "null"
+
+    local_storage_root: str = "/app/storage"
+    max_upload_size_bytes: int = 10 * 1024 * 1024
+
+    s3_bucket_name: str | None = None
+    s3_region: str | None = None
+    s3_access_key_id: str | None = None
+    s3_secret_access_key: str | None = None
+
+    openrouter_api_key: str | None = None
+    graphhopper_api_key: str | None = None
+    maptiler_api_key: str | None = None
+    firebase_project_id: str | None = None
+    firebase_client_email: str | None = None
+    firebase_private_key: str | None = None
 
     initial_platform_admin_email: str = "admin@mechanic.local"
     initial_platform_admin_password: str = "Admin12345"
@@ -42,15 +69,24 @@ class Settings(BaseSettings):
     initial_platform_admin_last_name: str = "Admin"
     initial_platform_admin_phone: str | None = "70000001"
 
-    local_storage_root: str = "/app/storage"
-    max_upload_size_bytes: int = 10 * 1024 * 1024
-
     @property
     def database_url(self) -> str:
         return (
             f"postgresql+psycopg://{self.postgres_user}:{self.postgres_password}"
             f"@{self.postgres_serv}:{self.postgres_port}/{self.postgres_db}"
         )
+
+    @property
+    def redis_url(self) -> str:
+        return f"redis://{self.redis_host}:{self.redis_port}/{self.redis_db}"
+
+    @property
+    def celery_broker_url(self) -> str:
+        return self.redis_url
+
+    @property
+    def celery_result_backend(self) -> str:
+        return self.redis_url
 
     @property
     def cors_origins(self) -> list[str]:
@@ -72,60 +108,3 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
-
-#import os
-
-
-#class Settings:
-#    """
-#    Centralized application configuration.
-#
-#    Reads environment variables and exposes them as attributes.
-#    """
-
-#    ENV_MODE: str = os.getenv("ENV_MODE", "development")
-
-    # ===============================
-    #  PostgreSQL
-    # ===============================
-#    POSTGRES_SERV: str = os.getenv("POSTGRES_SERV", "localhost")
-#    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "mechanic_db")
-#    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "mechanic_user")
-#    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "mechanic_password")
-#    POSTGRES_PORT: int = int(os.getenv("POSTGRES_PORT", "5432"))
-
-    # ===============================
-    #  Backend
-    # ===============================
- #   BACKEND_HOST: str = os.getenv("BACKEND_HOST", "0.0.0.0")
- #   BACKEND_PORT: int = int(os.getenv("BACKEND_PORT", "8000"))
-
-    # ===============================
-    #  Security
-    # ===============================
- #   SECRET_KEY: str = os.getenv("SECRET_KEY", "dev_secret")
- #   ACCESS_TOKEN_EXPIRE_MINUTES: int = int(
- #       os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60")
- #   )
-
-    # ===============================
-    #  CORS
-    # ===============================
- #   CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "")
-
- #   @property
- #   def database_url(self) -> str:
-#        """
-#        Builds PostgreSQL connection URL using internal Docker network values.
-
-#        NOTE:
-#        Uses POSTGRES_SERV (Docker service name) and POSTGRES_PORT (container port).
-#        Does NOT use host port.
-#        """
-#        return (
-#            f"postgresql+psycopg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
-#            f"@{self.POSTGRES_SERV}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-#        )
-
-
-#settings = Settings()
