@@ -34,6 +34,8 @@ from app.common.constants import (
     SERVICE_CODE_OVERHEATING_ASSISTANCE,
     SERVICE_CODE_TIRE_CHANGE,
     SERVICE_CODE_TOWING,
+    PUSH_EVENT_INCIDENT_ACCEPTED,
+    PUSH_EVENT_NEW_ASSIGNMENT_AVAILABLE,
 )
 from app.common.exceptions import ConflictException, ForbiddenException, NotFoundException
 from app.services.assignment.models import IncidentAssignmentCandidate
@@ -49,6 +51,7 @@ from app.services.assignment.schemas import (
 )
 from app.services.auth.models import User
 from app.services.catalog.models import ProviderService
+from app.services.notifications.dispatcher import PushNotificationDispatcher
 
 
 class AssignmentService:
@@ -134,6 +137,10 @@ class AssignmentService:
             raise
 
         recommended_candidate = ranked_candidates[0] if ranked_candidates else None
+        self._enqueue_notification_safely(
+        lambda: self._enqueue_candidate_publication_notifications(incident_id)
+        )
+
 
         return AssignmentPublishResponse(
             incident_id=str(incident.id),
@@ -269,6 +276,11 @@ class AssignmentService:
         except Exception:
             self.repository.rollback()
             raise
+
+        self._enqueue_notification_safely(
+        lambda: self._enqueue_incident_accepted_notification(str(locked_incident.id))
+        )
+
 
         return AssignmentActionResponse(
             candidate_id=str(locked_candidate.id),
@@ -658,3 +670,63 @@ class AssignmentService:
             provider=provider_payload,
             incident=incident_payload,
         )
+
+    def _enqueue_candidate_publication_notifications(self, incident_id: str) -> None:
+        dispatcher = PushNotificationDispatcher(self.repository.db)
+        candidates = self.repository.list_candidates_by_incident_id(incident_id)
+
+        for candidate in candidates:
+            if candidate.provider is None or candidate.provider.owner_user is None:
+                continue
+
+        dispatcher.enqueue_event_for_user_ids(
+            requested_by_user_id=None,
+            incident_id=incident_id,
+            event_code=PUSH_EVENT_NEW_ASSIGNMENT_AVAILABLE,
+            recipient_user_ids=[str(candidate.provider.owner_user.id)],
+            title="Nueva solicitud disponible",
+            body=(
+                f"Hay una nueva solicitud de auxilio: {candidate.incident.title}. "
+                "Revísala y decide si deseas aceptarla."
+            ),
+            data={
+                "event_code": PUSH_EVENT_NEW_ASSIGNMENT_AVAILABLE,
+                "incident_id": str(candidate.incident_id),
+                "candidate_id": str(candidate.id),
+                "reported_category": candidate.incident.reported_category,
+                "priority": candidate.incident.priority,
+                "status": candidate.incident.status,
+            },
+        )
+
+
+def _enqueue_incident_accepted_notification(self, incident_id: str) -> None:
+    dispatcher = PushNotificationDispatcher(self.repository.db)
+    incident = self.repository.get_incident_by_id(incident_id)
+    if incident is None or incident.provider is None:
+        return
+
+    dispatcher.enqueue_event_for_user_ids(
+        requested_by_user_id=None,
+        incident_id=incident_id,
+        event_code=PUSH_EVENT_INCIDENT_ACCEPTED,
+        recipient_user_ids=[str(incident.client_user_id)],
+        title="Solicitud tomada",
+        body=(
+            f"{incident.provider.business_name} tomó tu solicitud y está preparando la atención."
+        ),
+        data={
+            "event_code": PUSH_EVENT_INCIDENT_ACCEPTED,
+            "incident_id": str(incident.id),
+            "provider_id": str(incident.provider_id),
+            "provider_name": incident.provider.business_name,
+            "status": incident.status,
+        },
+    )
+
+
+def _enqueue_notification_safely(self, callback) -> None:
+    try:
+        callback()
+    except Exception:
+        return

@@ -15,7 +15,14 @@ from app.common.constants import (
     INCIDENT_STATUS_IN_PROGRESS,
     INCIDENT_STATUS_ON_SITE,
     PROVIDER_TYPE_WORKSHOP,
+    PUSH_EVENT_INCIDENT_CANCELLED,
+    PUSH_EVENT_INCIDENT_COMPLETED,
+    PUSH_EVENT_PROVIDER_ARRIVED,
+    PUSH_EVENT_PROVIDER_EN_ROUTE,
+    PUSH_EVENT_TECHNICIAN_ASSIGNED,
+
 )
+from app.services.notifications.dispatcher import PushNotificationDispatcher
 from app.common.exceptions import ConflictException, ForbiddenException, NotFoundException
 from app.services.auth.models import User
 from app.services.operations.models import IncidentOperationEvent
@@ -154,6 +161,11 @@ class OperationsService:
         incident = self.repository.get_incident_by_id(incident_id)
         if incident is None:
             raise NotFoundException("Incident not found.")
+        
+        self._enqueue_notification_safely(
+        lambda: self._enqueue_dispatch_notification(incident_id)
+        )
+
 
         return self._build_operation_state_response(incident)
 
@@ -207,6 +219,10 @@ class OperationsService:
         incident = self.repository.get_incident_by_id(incident_id)
         if incident is None:
             raise NotFoundException("Incident not found.")
+
+        self._enqueue_notification_safely(
+        lambda: self._enqueue_arrival_notification(incident_id)
+        )
 
         return self._build_operation_state_response(incident)
 
@@ -353,6 +369,10 @@ class OperationsService:
         if incident is None:
             raise NotFoundException("Incident not found.")
 
+        self._enqueue_notification_safely(
+        lambda: self._enqueue_completion_notification(incident_id)
+        )
+
         return self._build_operation_state_response(incident)
 
     def cancel_my_service(
@@ -433,6 +453,11 @@ class OperationsService:
         incident = self.repository.get_incident_by_id(incident_id)
         if incident is None:
             raise NotFoundException("Incident not found.")
+
+
+        self._enqueue_notification_safely(
+        lambda: self._enqueue_cancellation_notification(incident_id)
+        )
 
         return self._build_operation_state_response(incident)
 
@@ -575,3 +600,122 @@ class OperationsService:
 
         cleaned_value = value.strip()
         return cleaned_value or None
+
+
+    def _enqueue_dispatch_notification(self, incident_id: str) -> None:
+        incident = self.repository.get_incident_by_id(incident_id)
+        if incident is None or incident.provider is None:
+            return
+
+        dispatcher = PushNotificationDispatcher(self.repository.db)
+
+        if incident.dispatch_mode == DISPATCH_MODE_TECHNICIAN and incident.assigned_technician is not None:
+            dispatcher.enqueue_event_for_user_ids(
+                requested_by_user_id=None,
+                incident_id=incident_id,
+                event_code=PUSH_EVENT_TECHNICIAN_ASSIGNED,
+                recipient_user_ids=[str(incident.client_user_id)],
+                title="Técnico asignado",
+                body=f"{incident.assigned_technician.full_name} fue asignado y ya va en camino.",
+                data={
+                "event_code": PUSH_EVENT_TECHNICIAN_ASSIGNED,
+                "incident_id": str(incident.id),
+                "provider_id": str(incident.provider_id),
+                "technician_id": str(incident.assigned_technician_id),
+                "technician_name": incident.assigned_technician.full_name,
+                "status": incident.status,
+                },
+            )
+            return
+
+        dispatcher.enqueue_event_for_user_ids(
+        requested_by_user_id=None,
+        incident_id=incident_id,
+        event_code=PUSH_EVENT_PROVIDER_EN_ROUTE,
+        recipient_user_ids=[str(incident.client_user_id)],
+        title="Ayuda en camino",
+        body=f"{incident.provider.business_name} ya va en camino hacia tu ubicación.",
+        data={
+            "event_code": PUSH_EVENT_PROVIDER_EN_ROUTE,
+            "incident_id": str(incident.id),
+            "provider_id": str(incident.provider_id),
+            "provider_name": incident.provider.business_name,
+            "status": incident.status,
+            },
+        )
+
+
+    def _enqueue_arrival_notification(self, incident_id: str) -> None:
+        incident = self.repository.get_incident_by_id(incident_id)
+        if incident is None or incident.provider is None:
+            return
+
+        dispatcher = PushNotificationDispatcher(self.repository.db)
+        dispatcher.enqueue_event_for_user_ids(
+            requested_by_user_id=None,
+            incident_id=incident_id,
+            event_code=PUSH_EVENT_PROVIDER_ARRIVED,
+            recipient_user_ids=[str(incident.client_user_id)],
+            title="Proveedor en el lugar",
+            body=f"{incident.provider.business_name} llegó al punto del incidente.",
+            data={
+            "event_code": PUSH_EVENT_PROVIDER_ARRIVED,
+            "incident_id": str(incident.id),
+            "provider_id": str(incident.provider_id),
+            "provider_name": incident.provider.business_name,
+            "status": incident.status,
+            },
+        )
+
+
+    def _enqueue_completion_notification(self, incident_id: str) -> None:
+        incident = self.repository.get_incident_by_id(incident_id)
+        if incident is None or incident.provider is None:
+            return
+
+        dispatcher = PushNotificationDispatcher(self.repository.db)
+        dispatcher.enqueue_event_for_user_ids(
+            requested_by_user_id=None,
+            incident_id=incident_id,
+            event_code=PUSH_EVENT_INCIDENT_COMPLETED,
+            recipient_user_ids=[str(incident.client_user_id)],
+            title="Servicio finalizado",
+            body=f"{incident.provider.business_name} finalizó la atención de tu incidente.",
+            data={
+            "event_code": PUSH_EVENT_INCIDENT_COMPLETED,
+            "incident_id": str(incident.id),
+            "provider_id": str(incident.provider_id),
+            "provider_name": incident.provider.business_name,
+            "status": incident.status,
+            },
+        )
+
+
+    def _enqueue_cancellation_notification(self, incident_id: str) -> None:
+        incident = self.repository.get_incident_by_id(incident_id)
+        if incident is None or incident.provider is None:
+            return
+
+        dispatcher = PushNotificationDispatcher(self.repository.db)
+        dispatcher.enqueue_event_for_user_ids(
+            requested_by_user_id=None,
+            incident_id=incident_id,
+            event_code=PUSH_EVENT_INCIDENT_CANCELLED,
+            recipient_user_ids=[str(incident.client_user_id)],
+            title="Servicio cancelado",
+            body=f"{incident.provider.business_name} canceló la atención del incidente.",
+            data={
+            "event_code": PUSH_EVENT_INCIDENT_CANCELLED,
+            "incident_id": str(incident.id),
+            "provider_id": str(incident.provider_id),
+            "provider_name": incident.provider.business_name,
+            "status": incident.status,
+            },
+        )
+
+
+    def _enqueue_notification_safely(self, callback) -> None:
+        try:
+            callback()
+        except Exception:
+            return

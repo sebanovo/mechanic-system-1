@@ -6,6 +6,7 @@ from app.integrations.llm.base import IncidentSummaryProvider
 from app.integrations.llm.null_provider import NullIncidentSummaryProvider
 from app.integrations.llm.openrouter_provider import OpenRouterIncidentSummaryProvider
 from app.integrations.push.base import PushNotificationProvider
+from app.integrations.push.firebase_fcm_provider import FirebaseFcmPushNotificationProvider
 from app.integrations.push.null_provider import NullPushNotificationProvider
 from app.integrations.routing.base import RoutingProvider
 from app.integrations.routing.graphhopper_provider import GraphHopperRoutingProvider
@@ -89,10 +90,17 @@ def build_routing_provider() -> RoutingProvider:
 
 
 def build_push_provider() -> PushNotificationProvider:
-    if settings.push_provider.lower() == "null":
+    selected_provider = settings.push_provider.lower()
+
+    if selected_provider == "null":
         return NullPushNotificationProvider()
 
-    return NullPushNotificationProvider()
+    if selected_provider in {"fcm", "firebase_fcm"}:
+        return FirebaseFcmPushNotificationProvider()
+
+    raise ServiceUnavailableException(
+        f"Unsupported push provider configured: {selected_provider}."
+    )
 
 
 def build_storage_service(provider_name: str | None = None) -> StorageService:

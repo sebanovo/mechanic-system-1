@@ -95,9 +95,15 @@ class Settings(BaseSettings):
     fallback_routing_average_speed_kmh: int = 25
 
     maptiler_api_key: str | None = None
+
     firebase_project_id: str | None = None
     firebase_client_email: str | None = None
     firebase_private_key: str | None = None
+    firebase_private_key_id: str | None = None
+    firebase_client_id: str | None = None
+    firebase_token_uri: str = "https://oauth2.googleapis.com/token"
+    firebase_service_account_type: str = "service_account"
+    firebase_service_account_json: str | None = None
 
     initial_platform_admin_email: str = "admin@mechanic.local"
     initial_platform_admin_password: str = "Admin12345"
@@ -144,6 +150,18 @@ class Settings(BaseSettings):
             for item in self.openrouter_fallback_models.split(",")
             if item.strip()
         ]
+
+    @property
+    def firebase_private_key_normalized(self) -> str | None:
+        if not self.firebase_private_key:
+            return None
+        return self.firebase_private_key.replace("\\n", "\n")
+
+    @property
+    def firebase_service_account_json_normalized(self) -> str | None:
+        if not self.firebase_service_account_json:
+            return None
+        return self.firebase_service_account_json.replace("\\n", "\n")
 
 
 @lru_cache

@@ -15,6 +15,7 @@ from app.services.catalog.router import router as catalog_router
 from app.services.evidences.router import router as evidences_router
 from app.services.incidents.router import router as incidents_router
 from app.services.jobs.router import router as jobs_router
+from app.services.notifications.router import router as notifications_router
 from app.services.operations.router import router as operations_router
 from app.services.providers.router import router as providers_router
 from app.services.system.router import router as system_router
@@ -70,6 +71,7 @@ def create_application() -> FastAPI:
     application.include_router(assignment_router, prefix=settings.api_v1_prefix)
     application.include_router(operations_router, prefix=settings.api_v1_prefix)
     application.include_router(tracking_router, prefix=settings.api_v1_prefix)
+    application.include_router(notifications_router, prefix=settings.api_v1_prefix)
 
     @application.get("/", tags=["Root"])
     def root() -> dict:
@@ -94,6 +96,7 @@ def create_application() -> FastAPI:
                 "assignment_base_url": f"{settings.api_v1_prefix}/assignment",
                 "operations_base_url": f"{settings.api_v1_prefix}/operations",
                 "tracking_base_url": f"{settings.api_v1_prefix}/tracking",
+                "notifications_base_url": f"{settings.api_v1_prefix}/notifications",
             },
         )
 

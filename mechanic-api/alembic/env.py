@@ -13,6 +13,7 @@ from app.services.vehicles import models as vehicles_models  # noqa: F401
 from app.services.incidents import models as incidents_models  # noqa: F401
 from app.services.evidences import models as evidences_models  # noqa: F401
 from app.services.jobs import models as jobs_models  # noqa: F401
+from app.services.notifications import models as notifications_models  # noqa: F401
 from app.services.operations import models as operations_models  # noqa: F401
 from app.services.tracking import models as tracking_models  # noqa: F401
 

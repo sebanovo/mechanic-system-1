@@ -24,5 +24,6 @@ celery_app.conf.update(
         "jobs.audio_transcription_task": {"queue": "audio"},
         "jobs.image_analysis_task": {"queue": "image"},
         "jobs.incident_summary_task": {"queue": "summary"},
+        "jobs.push_notification_task": {"queue": "push"},
     },
 )
