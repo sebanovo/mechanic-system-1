@@ -9,12 +9,16 @@ from app.common.responses import success_response
 from app.core.config import settings
 from app.core.database import SessionLocal
 from app.core.logging_config import configure_logging
+from app.services.assignment.router import router as assignment_router
 from app.services.auth.router import router as auth_router
+from app.services.catalog.router import router as catalog_router
 from app.services.evidences.router import router as evidences_router
 from app.services.incidents.router import router as incidents_router
 from app.services.jobs.router import router as jobs_router
+from app.services.operations.router import router as operations_router
 from app.services.providers.router import router as providers_router
 from app.services.system.router import router as system_router
+from app.services.tracking.router import router as tracking_router
 from app.services.users.router import router as users_router
 from app.services.vehicles.router import router as vehicles_router
 
@@ -58,10 +62,14 @@ def create_application() -> FastAPI:
     application.include_router(auth_router, prefix=settings.api_v1_prefix)
     application.include_router(users_router, prefix=settings.api_v1_prefix)
     application.include_router(providers_router, prefix=settings.api_v1_prefix)
+    application.include_router(catalog_router, prefix=settings.api_v1_prefix)
     application.include_router(vehicles_router, prefix=settings.api_v1_prefix)
     application.include_router(incidents_router, prefix=settings.api_v1_prefix)
     application.include_router(evidences_router, prefix=settings.api_v1_prefix)
     application.include_router(jobs_router, prefix=settings.api_v1_prefix)
+    application.include_router(assignment_router, prefix=settings.api_v1_prefix)
+    application.include_router(operations_router, prefix=settings.api_v1_prefix)
+    application.include_router(tracking_router, prefix=settings.api_v1_prefix)
 
     @application.get("/", tags=["Root"])
     def root() -> dict:
@@ -78,10 +86,14 @@ def create_application() -> FastAPI:
                 "auth_base_url": f"{settings.api_v1_prefix}/auth",
                 "users_base_url": f"{settings.api_v1_prefix}/users",
                 "providers_base_url": f"{settings.api_v1_prefix}/providers",
+                "catalog_base_url": f"{settings.api_v1_prefix}/catalog",
                 "vehicles_base_url": f"{settings.api_v1_prefix}/vehicles",
                 "incidents_base_url": f"{settings.api_v1_prefix}/incidents",
                 "evidences_base_url": f"{settings.api_v1_prefix}/evidences",
                 "jobs_base_url": f"{settings.api_v1_prefix}/jobs",
+                "assignment_base_url": f"{settings.api_v1_prefix}/assignment",
+                "operations_base_url": f"{settings.api_v1_prefix}/operations",
+                "tracking_base_url": f"{settings.api_v1_prefix}/tracking",
             },
         )
 

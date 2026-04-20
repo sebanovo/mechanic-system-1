@@ -1,33 +1,29 @@
-from dataclasses import dataclass, field
-from typing import Any, Protocol
+from dataclasses import dataclass
+from typing import Protocol
 
 
 @dataclass(slots=True)
-class CoordinatePoint:
-    latitude: float
-    longitude: float
+class RouteCalculationRequest:
+    origin_latitude: float
+    origin_longitude: float
+    destination_latitude: float
+    destination_longitude: float
+    profile: str | None = None
 
 
 @dataclass(slots=True)
-class RoutingRequest:
-    origin: CoordinatePoint
-    destination: CoordinatePoint
-
-
-@dataclass(slots=True)
-class RoutingResult:
-    distance_meters: float | None = None
-    duration_seconds: float | None = None
-    eta_text: str | None = None
-    polyline: str | None = None
-    raw_response: dict[str, Any] = field(default_factory=dict)
+class RouteCalculationResult:
+    distance_meters: float | None
+    duration_seconds: int | None
+    polyline: str | None
+    raw_response: dict | None = None
 
 
 class RoutingProvider(Protocol):
     provider_name: str
 
-    def compute_route(
+    def calculate_route(
         self,
-        request: RoutingRequest,
-    ) -> RoutingResult:
+        request: RouteCalculationRequest,
+    ) -> RouteCalculationResult:
         ...

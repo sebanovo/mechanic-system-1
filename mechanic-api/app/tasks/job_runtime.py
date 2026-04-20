@@ -21,6 +21,8 @@ def mark_job_running(job_id: str, celery_task_id: str | None = None) -> None:
         job.status = BACKGROUND_JOB_STATUS_RUNNING
         job.celery_task_id = celery_task_id or job.celery_task_id
         job.started_at = datetime.now(timezone.utc)
+        job.finished_at = None
+        job.error_message = None
         job.attempts_count += 1
 
         repository.save_job(job)
@@ -38,6 +40,7 @@ def mark_job_succeeded(job_id: str, result_payload: dict | object | None = None)
 
         job.status = BACKGROUND_JOB_STATUS_SUCCEEDED
         job.finished_at = datetime.now(timezone.utc)
+        job.error_message = None
 
         if result_payload is None:
             job.result_json = None

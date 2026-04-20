@@ -55,9 +55,45 @@ class Settings(BaseSettings):
     s3_region: str | None = None
     s3_access_key_id: str | None = None
     s3_secret_access_key: str | None = None
+    s3_endpoint_url: str | None = None
+    s3_public_base_url: str | None = None
+    s3_presigned_url_expiration_seconds: int = 900
+
+    faster_whisper_model_size: str = "small"
+    faster_whisper_device: str = "cpu"
+    faster_whisper_compute_type: str = "int8"
+    faster_whisper_beam_size: int = 5
+    faster_whisper_vad_filter: bool = True
+    faster_whisper_word_timestamps: bool = True
+    faster_whisper_condition_on_previous_text: bool = False
+    faster_whisper_language: str | None = None
+    faster_whisper_download_timeout_seconds: int = 120
+
+    ultralytics_yolo_model: str = "yolo11n.pt"
+    ultralytics_yolo_device: str = "cpu"
+    ultralytics_yolo_confidence_threshold: float = 0.25
+    ultralytics_yolo_iou_threshold: float = 0.45
+    ultralytics_yolo_image_size: int = 640
+    ultralytics_yolo_max_detections: int = 50
 
     openrouter_api_key: str | None = None
+    openrouter_api_base_url: str = "https://openrouter.ai/api/v1"
+    openrouter_model: str = "openrouter/auto"
+    openrouter_fallback_models: str = ""
+    openrouter_temperature: float = 0.2
+    openrouter_max_tokens: int = 350
+    openrouter_http_referer: str | None = None
+    openrouter_x_title: str | None = None
+    openrouter_timeout_seconds: int = 120
+
     graphhopper_api_key: str | None = None
+    graphhopper_api_base_url: str = "https://graphhopper.com/api/1"
+    graphhopper_profile: str = "car"
+    graphhopper_timeout_seconds: int = 60
+    graphhopper_points_encoded: bool = True
+
+    fallback_routing_average_speed_kmh: int = 25
+
     maptiler_api_key: str | None = None
     firebase_project_id: str | None = None
     firebase_client_email: str | None = None
@@ -100,6 +136,14 @@ class Settings(BaseSettings):
     @property
     def storage_root_path(self) -> Path:
         return Path(self.local_storage_root).resolve()
+
+    @property
+    def openrouter_fallback_models_list(self) -> list[str]:
+        return [
+            item.strip()
+            for item in self.openrouter_fallback_models.split(",")
+            if item.strip()
+        ]
 
 
 @lru_cache

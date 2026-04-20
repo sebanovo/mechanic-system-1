@@ -14,6 +14,20 @@ class ProviderOwnerResponse(BaseModel):
     is_active: bool
 
 
+class ProviderConfiguredServiceSummaryResponse(BaseModel):
+    id: str
+    service_catalog_item_id: str
+    code: str
+    category: str
+    title: str
+    price_estimate_min: float | None = None
+    price_estimate_max: float | None = None
+    estimated_duration_minutes: int | None = None
+    is_mobile_service_enabled: bool
+    is_emergency_service_enabled: bool
+    is_active: bool
+
+
 class TechnicianResponse(BaseModel):
     id: str
     provider_id: str
@@ -49,14 +63,12 @@ class ProviderResponse(BaseModel):
     current_active_services: int
     available_capacity: int
     average_rating: float
-    offers_towing: bool
-    offers_battery_service: bool
-    offers_tire_service: bool
-    offers_lockout_service: bool
-    offers_engine_diagnosis: bool
     owner_user: ProviderOwnerResponse
     technicians_count: int
     available_technicians_count: int
+    configured_services_count: int
+    active_services_count: int
+    active_services: list[ProviderConfiguredServiceSummaryResponse]
     created_at: datetime
     updated_at: datetime
 
@@ -81,11 +93,6 @@ class CreateProviderProfileRequest(BaseModel):
     base_latitude: float | None = None
     base_longitude: float | None = None
     max_concurrent_services: int = Field(default=1, ge=1, le=100)
-    offers_towing: bool = False
-    offers_battery_service: bool = False
-    offers_tire_service: bool = False
-    offers_lockout_service: bool = False
-    offers_engine_diagnosis: bool = False
 
 
 class ProviderOnboardingRequest(BaseModel):
@@ -105,11 +112,6 @@ class UpdateOwnProviderRequest(BaseModel):
     base_longitude: float | None = None
     is_available: bool | None = None
     max_concurrent_services: int | None = Field(default=None, ge=1, le=100)
-    offers_towing: bool | None = None
-    offers_battery_service: bool | None = None
-    offers_tire_service: bool | None = None
-    offers_lockout_service: bool | None = None
-    offers_engine_diagnosis: bool | None = None
 
 
 class UpdateProviderOperationsRequest(BaseModel):

@@ -1,16 +1,11 @@
 from app.common.constants import (
     BACKGROUND_JOB_STATUS_PENDING,
-    BACKGROUND_JOB_TYPE_AUDIO_TRANSCRIPTION,
     BACKGROUND_JOB_TYPE_DEMO,
-    BACKGROUND_JOB_TYPE_IMAGE_ANALYSIS,
-    BACKGROUND_JOB_TYPE_INCIDENT_SUMMARY,
-    CELERY_QUEUE_AUDIO,
     CELERY_QUEUE_DEFAULT,
-    CELERY_QUEUE_IMAGE,
-    CELERY_QUEUE_SUMMARY,
 )
 from app.common.exceptions import NotFoundException
 from app.services.auth.models import User
+from app.services.jobs.dispatcher import PipelineDispatcher
 from app.services.jobs.models import BackgroundJob
 from app.services.jobs.repository import JobsRepository
 from app.services.jobs.schemas import (
@@ -18,17 +13,13 @@ from app.services.jobs.schemas import (
     BackgroundJobResponse,
     DemoJobEnqueueRequest,
 )
-from app.tasks.task_definitions import (
-    audio_transcription_task,
-    demo_echo_task,
-    image_analysis_task,
-    incident_summary_task,
-)
+from app.tasks.task_definitions import demo_echo_task
 
 
 class JobsService:
     def __init__(self, repository: JobsRepository) -> None:
         self.repository = repository
+        self.dispatcher = PipelineDispatcher(repository.db)
 
     def enqueue_demo_job(
         self,
@@ -67,99 +58,36 @@ class JobsService:
         current_user: User,
         evidence_id: str,
     ) -> BackgroundJobResponse:
-        if not self.repository.evidence_exists(evidence_id):
-            raise NotFoundException("Evidence not found.")
-
-        job = BackgroundJob(
-            requested_by_user_id=current_user.id,
-            job_type=BACKGROUND_JOB_TYPE_AUDIO_TRANSCRIPTION,
-            status=BACKGROUND_JOB_STATUS_PENDING,
-            provider_name="celery",
-            queue_name=CELERY_QUEUE_AUDIO,
-            entity_type="INCIDENT_EVIDENCE",
-            entity_id=evidence_id,
-            payload_json={
-                "evidence_id": evidence_id,
-            },
+        created_job = self.dispatcher.enqueue_audio_transcription_job(
+            requested_by_user_id=str(current_user.id),
+            evidence_id=evidence_id,
+            enqueue_reason="manual_platform_enqueue",
         )
-
-        created_job = self.repository.create_job(job)
-
-        async_result = audio_transcription_task.apply_async(
-            args=[str(created_job.id), evidence_id],
-            queue=CELERY_QUEUE_AUDIO,
-        )
-
-        created_job.celery_task_id = async_result.id
-        updated_job = self.repository.save_job(created_job)
-
-        return self._build_job_response(updated_job)
+        return self._build_job_response(created_job)
 
     def enqueue_image_analysis_job(
         self,
         current_user: User,
         evidence_id: str,
     ) -> BackgroundJobResponse:
-        if not self.repository.evidence_exists(evidence_id):
-            raise NotFoundException("Evidence not found.")
-
-        job = BackgroundJob(
-            requested_by_user_id=current_user.id,
-            job_type=BACKGROUND_JOB_TYPE_IMAGE_ANALYSIS,
-            status=BACKGROUND_JOB_STATUS_PENDING,
-            provider_name="celery",
-            queue_name=CELERY_QUEUE_IMAGE,
-            entity_type="INCIDENT_EVIDENCE",
-            entity_id=evidence_id,
-            payload_json={
-                "evidence_id": evidence_id,
-            },
+        created_job = self.dispatcher.enqueue_image_analysis_job(
+            requested_by_user_id=str(current_user.id),
+            evidence_id=evidence_id,
+            enqueue_reason="manual_platform_enqueue",
         )
-
-        created_job = self.repository.create_job(job)
-
-        async_result = image_analysis_task.apply_async(
-            args=[str(created_job.id), evidence_id],
-            queue=CELERY_QUEUE_IMAGE,
-        )
-
-        created_job.celery_task_id = async_result.id
-        updated_job = self.repository.save_job(created_job)
-
-        return self._build_job_response(updated_job)
+        return self._build_job_response(created_job)
 
     def enqueue_incident_summary_job(
         self,
         current_user: User,
         incident_id: str,
     ) -> BackgroundJobResponse:
-        if not self.repository.incident_exists(incident_id):
-            raise NotFoundException("Incident not found.")
-
-        job = BackgroundJob(
-            requested_by_user_id=current_user.id,
-            job_type=BACKGROUND_JOB_TYPE_INCIDENT_SUMMARY,
-            status=BACKGROUND_JOB_STATUS_PENDING,
-            provider_name="celery",
-            queue_name=CELERY_QUEUE_SUMMARY,
-            entity_type="INCIDENT",
-            entity_id=incident_id,
-            payload_json={
-                "incident_id": incident_id,
-            },
+        created_job = self.dispatcher.enqueue_incident_summary_job(
+            requested_by_user_id=str(current_user.id),
+            incident_id=incident_id,
+            enqueue_reason="manual_platform_enqueue",
         )
-
-        created_job = self.repository.create_job(job)
-
-        async_result = incident_summary_task.apply_async(
-            args=[str(created_job.id), incident_id],
-            queue=CELERY_QUEUE_SUMMARY,
-        )
-
-        created_job.celery_task_id = async_result.id
-        updated_job = self.repository.save_job(created_job)
-
-        return self._build_job_response(updated_job)
+        return self._build_job_response(created_job)
 
     def list_jobs(self, limit: int = 50, offset: int = 0) -> list[BackgroundJobResponse]:
         jobs = self.repository.list_jobs(limit=limit, offset=offset)

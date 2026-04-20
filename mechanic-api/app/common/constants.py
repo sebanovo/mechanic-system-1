@@ -36,7 +36,10 @@ VEHICLE_TYPE_OTHER = "OTHER"
 
 INCIDENT_STATUS_PENDING = "PENDING"
 INCIDENT_STATUS_IN_REVIEW = "IN_REVIEW"
+INCIDENT_STATUS_PUBLISHED = "PUBLISHED"
 INCIDENT_STATUS_ASSIGNED = "ASSIGNED"
+INCIDENT_STATUS_EN_ROUTE = "EN_ROUTE"
+INCIDENT_STATUS_ON_SITE = "ON_SITE"
 INCIDENT_STATUS_IN_PROGRESS = "IN_PROGRESS"
 INCIDENT_STATUS_COMPLETED = "COMPLETED"
 INCIDENT_STATUS_CANCELLED = "CANCELLED"
@@ -55,9 +58,117 @@ INCIDENT_CATEGORY_OVERHEATING = "OVERHEATING"
 INCIDENT_CATEGORY_OTHER = "OTHER"
 INCIDENT_CATEGORY_UNCERTAIN = "UNCERTAIN"
 
+PUBLIC_INCIDENT_CATEGORIES = (
+    INCIDENT_CATEGORY_BATTERY,
+    INCIDENT_CATEGORY_TIRE,
+    INCIDENT_CATEGORY_ACCIDENT,
+    INCIDENT_CATEGORY_ENGINE,
+    INCIDENT_CATEGORY_LOCKOUT,
+    INCIDENT_CATEGORY_OVERHEATING,
+    INCIDENT_CATEGORY_OTHER,
+    INCIDENT_CATEGORY_UNCERTAIN,
+)
+
+SERVICE_CODE_TOWING = "TOWING"
+SERVICE_CODE_BATTERY_JUMPSTART = "BATTERY_JUMPSTART"
+SERVICE_CODE_TIRE_CHANGE = "TIRE_CHANGE"
+SERVICE_CODE_LOCKOUT_ASSISTANCE = "LOCKOUT_ASSISTANCE"
+SERVICE_CODE_ENGINE_DIAGNOSTIC = "ENGINE_DIAGNOSTIC"
+SERVICE_CODE_OVERHEATING_ASSISTANCE = "OVERHEATING_ASSISTANCE"
+SERVICE_CODE_ACCIDENT_SUPPORT = "ACCIDENT_SUPPORT"
+
+INITIAL_SERVICE_CATALOG_ITEMS = (
+    {
+        "code": SERVICE_CODE_TOWING,
+        "category": INCIDENT_CATEGORY_ACCIDENT,
+        "title": "Servicio de grúa",
+        "description": "Traslado del vehículo cuando no puede circular o requiere remolque.",
+        "supports_mobile_service": True,
+        "supports_emergency_service": True,
+        "sort_order": 10,
+    },
+    {
+        "code": SERVICE_CODE_BATTERY_JUMPSTART,
+        "category": INCIDENT_CATEGORY_BATTERY,
+        "title": "Auxilio de batería",
+        "description": "Paso de corriente, revisión básica o apoyo por batería descargada.",
+        "supports_mobile_service": True,
+        "supports_emergency_service": True,
+        "sort_order": 20,
+    },
+    {
+        "code": SERVICE_CODE_TIRE_CHANGE,
+        "category": INCIDENT_CATEGORY_TIRE,
+        "title": "Cambio o auxilio de llanta",
+        "description": "Cambio de llanta, apoyo por pinchazo o revisión rápida en carretera.",
+        "supports_mobile_service": True,
+        "supports_emergency_service": True,
+        "sort_order": 30,
+    },
+    {
+        "code": SERVICE_CODE_LOCKOUT_ASSISTANCE,
+        "category": INCIDENT_CATEGORY_LOCKOUT,
+        "title": "Apertura por llave encerrada",
+        "description": "Asistencia para apertura del vehículo por bloqueo o llave olvidada.",
+        "supports_mobile_service": True,
+        "supports_emergency_service": True,
+        "sort_order": 40,
+    },
+    {
+        "code": SERVICE_CODE_ENGINE_DIAGNOSTIC,
+        "category": INCIDENT_CATEGORY_ENGINE,
+        "title": "Diagnóstico mecánico básico",
+        "description": "Evaluación inicial de fallas mecánicas o del motor en sitio o taller.",
+        "supports_mobile_service": True,
+        "supports_emergency_service": True,
+        "sort_order": 50,
+    },
+    {
+        "code": SERVICE_CODE_OVERHEATING_ASSISTANCE,
+        "category": INCIDENT_CATEGORY_OVERHEATING,
+        "title": "Auxilio por sobrecalentamiento",
+        "description": "Atención preliminar para vehículos detenidos por calentamiento excesivo.",
+        "supports_mobile_service": True,
+        "supports_emergency_service": True,
+        "sort_order": 60,
+    },
+    {
+        "code": SERVICE_CODE_ACCIDENT_SUPPORT,
+        "category": INCIDENT_CATEGORY_ACCIDENT,
+        "title": "Atención inicial por choque leve",
+        "description": "Inspección preliminar del daño visible y definición del tipo de auxilio requerido.",
+        "supports_mobile_service": True,
+        "supports_emergency_service": True,
+        "sort_order": 70,
+    },
+)
+
 EVIDENCE_TYPE_IMAGE = "IMAGE"
 EVIDENCE_TYPE_AUDIO = "AUDIO"
 EVIDENCE_TYPE_TEXT = "TEXT"
+
+PROCESSING_STATUS_NOT_REQUESTED = "NOT_REQUESTED"
+PROCESSING_STATUS_PENDING = "PENDING"
+PROCESSING_STATUS_RUNNING = "RUNNING"
+PROCESSING_STATUS_SUCCEEDED = "SUCCEEDED"
+PROCESSING_STATUS_FAILED = "FAILED"
+
+ASSIGNMENT_CANDIDATE_STATUS_AVAILABLE = "AVAILABLE"
+ASSIGNMENT_CANDIDATE_STATUS_ACCEPTED = "ACCEPTED"
+ASSIGNMENT_CANDIDATE_STATUS_REJECTED = "REJECTED"
+ASSIGNMENT_CANDIDATE_STATUS_EXPIRED = "EXPIRED"
+
+DISPATCH_MODE_PROVIDER_SELF = "PROVIDER_SELF"
+DISPATCH_MODE_TECHNICIAN = "TECHNICIAN"
+
+TRACKING_SOURCE_PROVIDER_SELF = "PROVIDER_SELF"
+TRACKING_SOURCE_TECHNICIAN = "TECHNICIAN"
+
+INCIDENT_OPERATION_EVENT_DISPATCHED = "DISPATCHED"
+INCIDENT_OPERATION_EVENT_ARRIVED_ON_SITE = "ARRIVED_ON_SITE"
+INCIDENT_OPERATION_EVENT_SERVICE_STARTED = "SERVICE_STARTED"
+INCIDENT_OPERATION_EVENT_SERVICE_COMPLETED = "SERVICE_COMPLETED"
+INCIDENT_OPERATION_EVENT_SERVICE_CANCELLED = "SERVICE_CANCELLED"
 
 BACKGROUND_JOB_STATUS_PENDING = "PENDING"
 BACKGROUND_JOB_STATUS_RUNNING = "RUNNING"

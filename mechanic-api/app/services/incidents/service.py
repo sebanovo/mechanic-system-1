@@ -4,6 +4,7 @@ from app.common.constants import (
     INCIDENT_STATUS_CANCELLED,
     INCIDENT_STATUS_IN_REVIEW,
     INCIDENT_STATUS_PENDING,
+    PROCESSING_STATUS_NOT_REQUESTED,
 )
 from app.common.exceptions import ConflictException, ForbiddenException, NotFoundException
 from app.services.auth.models import User
@@ -14,6 +15,7 @@ from app.services.incidents.schemas import (
     IncidentClientSummaryResponse,
     IncidentProviderSummaryResponse,
     IncidentResponse,
+    IncidentTechnicianSummaryResponse,
     IncidentVehicleSummaryResponse,
     UpdateOwnPendingIncidentRequest,
 )
@@ -42,6 +44,8 @@ class IncidentsService:
             client_user_id=current_user.id,
             vehicle_id=vehicle.id,
             provider_id=None,
+            assigned_technician_id=None,
+            dispatch_mode=None,
             status=INCIDENT_STATUS_PENDING,
             priority=payload.priority,
             reported_category=payload.reported_category,
@@ -53,6 +57,25 @@ class IncidentsService:
             address_reference=payload.address_reference.strip() if payload.address_reference else None,
             estimated_price_min=None,
             estimated_price_max=None,
+            ai_summary_status=PROCESSING_STATUS_NOT_REQUESTED,
+            summary_provider_name=None,
+            structured_summary=None,
+            suggested_category=None,
+            suggested_priority=None,
+            requires_more_information=False,
+            summary_processed_at=None,
+            summary_error_message=None,
+            responder_last_latitude=None,
+            responder_last_longitude=None,
+            responder_last_source_type=None,
+            responder_last_recorded_at=None,
+            route_provider_name=None,
+            route_distance_meters=None,
+            route_duration_seconds=None,
+            route_eta_seconds=None,
+            route_polyline=None,
+            route_last_calculated_at=None,
+            route_error_message=None,
         )
 
         created_incident = self.repository.create_incident(new_incident)
@@ -195,6 +218,21 @@ class IncidentsService:
                 average_rating=incident.provider.average_rating,
             )
 
+        assigned_technician_payload = None
+        if incident.assigned_technician is not None:
+            technician = incident.assigned_technician
+            assigned_technician_payload = IncidentTechnicianSummaryResponse(
+                id=str(technician.id),
+                provider_id=str(technician.provider_id),
+                first_name=technician.first_name,
+                last_name=technician.last_name,
+                full_name=technician.full_name,
+                phone_number=technician.phone_number,
+                specialty=technician.specialty,
+                is_active=technician.is_active,
+                is_available=technician.is_available,
+            )
+
         estimated_price_min = (
             float(incident.estimated_price_min)
             if incident.estimated_price_min is not None
@@ -206,11 +244,28 @@ class IncidentsService:
             else None
         )
 
+        route_distance_km = (
+            round(incident.route_distance_meters / 1000.0, 2)
+            if incident.route_distance_meters is not None
+            else None
+        )
+        route_eta_minutes = (
+            int(round(incident.route_eta_seconds / 60))
+            if incident.route_eta_seconds is not None
+            else None
+        )
+
         return IncidentResponse(
             id=str(incident.id),
             client_user_id=str(incident.client_user_id),
             vehicle_id=str(incident.vehicle_id),
             provider_id=str(incident.provider_id) if incident.provider_id is not None else None,
+            assigned_technician_id=(
+                str(incident.assigned_technician_id)
+                if incident.assigned_technician_id is not None
+                else None
+            ),
+            dispatch_mode=incident.dispatch_mode,
             status=incident.status,
             priority=incident.priority,
             reported_category=incident.reported_category,
@@ -222,8 +277,31 @@ class IncidentsService:
             address_reference=incident.address_reference,
             estimated_price_min=estimated_price_min,
             estimated_price_max=estimated_price_max,
+            ai_summary_status=incident.ai_summary_status,
+            summary_provider_name=incident.summary_provider_name,
+            structured_summary=incident.structured_summary,
+            suggested_category=incident.suggested_category,
+            suggested_priority=incident.suggested_priority,
+            requires_more_information=incident.requires_more_information,
+            summary_processed_at=incident.summary_processed_at,
+            summary_error_message=incident.summary_error_message,
+            responder_last_latitude=incident.responder_last_latitude,
+            responder_last_longitude=incident.responder_last_longitude,
+            responder_last_source_type=incident.responder_last_source_type,
+            responder_last_recorded_at=incident.responder_last_recorded_at,
+            route_provider_name=incident.route_provider_name,
+            route_distance_meters=incident.route_distance_meters,
+            route_distance_km=route_distance_km,
+            route_duration_seconds=incident.route_duration_seconds,
+            route_eta_seconds=incident.route_eta_seconds,
+            route_eta_minutes=route_eta_minutes,
+            route_polyline=incident.route_polyline,
+            route_last_calculated_at=incident.route_last_calculated_at,
+            route_error_message=incident.route_error_message,
             requested_at=incident.requested_at,
             assigned_at=incident.assigned_at,
+            en_route_at=incident.en_route_at,
+            arrived_at=incident.arrived_at,
             started_at=incident.started_at,
             completed_at=incident.completed_at,
             cancelled_at=incident.cancelled_at,
@@ -232,4 +310,5 @@ class IncidentsService:
             vehicle=vehicle_payload,
             client_user=client_payload,
             provider=provider_payload,
+            assigned_technician=assigned_technician_payload,
         )

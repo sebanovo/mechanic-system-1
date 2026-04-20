@@ -37,11 +37,6 @@ class RegisterProviderProfileRequest(BaseModel):
     base_latitude: float | None = None
     base_longitude: float | None = None
     max_concurrent_services: int = Field(default=1, ge=1, le=100)
-    offers_towing: bool = False
-    offers_battery_service: bool = False
-    offers_tire_service: bool = False
-    offers_lockout_service: bool = False
-    offers_engine_diagnosis: bool = False
 
 
 class RegisterRequest(BaseModel):

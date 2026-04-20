@@ -43,12 +43,6 @@ class Provider(Base):
 
     average_rating: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
 
-    offers_towing: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    offers_battery_service: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    offers_tire_service: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    offers_lockout_service: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    offers_engine_diagnosis: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -63,6 +57,11 @@ class Provider(Base):
 
     owner_user = relationship("User", lazy="selectin")
     technicians: Mapped[list["Technician"]] = relationship(
+        back_populates="provider",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
+    provider_services: Mapped[list["ProviderService"]] = relationship(
         back_populates="provider",
         cascade="all, delete-orphan",
         lazy="selectin",
