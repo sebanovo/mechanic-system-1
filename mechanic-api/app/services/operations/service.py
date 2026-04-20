@@ -20,6 +20,11 @@ from app.common.constants import (
     PUSH_EVENT_PROVIDER_ARRIVED,
     PUSH_EVENT_PROVIDER_EN_ROUTE,
     PUSH_EVENT_TECHNICIAN_ASSIGNED,
+    AUDIT_EVENT_INCIDENT_ARRIVED,
+    AUDIT_EVENT_INCIDENT_CANCELLED,
+    AUDIT_EVENT_INCIDENT_COMPLETED,
+    AUDIT_EVENT_INCIDENT_DISPATCHED,
+
 
 )
 from app.services.notifications.dispatcher import PushNotificationDispatcher
@@ -37,6 +42,9 @@ from app.services.operations.schemas import (
     OperationNoteRequest,
     OperationTechnicianSummaryResponse,
 )
+from app.services.billing.repository import BillingRepository
+from app.services.billing.service import BillingService
+
 
 
 class OperationsService:
@@ -166,6 +174,18 @@ class OperationsService:
         lambda: self._enqueue_dispatch_notification(incident_id)
         )
 
+        self._emit_audit_safely(
+        actor_user_id=str(current_user.id),
+        incident_id=str(incident.id),
+        provider_id=str(incident.provider_id) if incident.provider_id else None,
+        event_type=AUDIT_EVENT_INCIDENT_DISPATCHED,
+        payload_json={
+            "dispatch_mode": incident.dispatch_mode,
+            "assigned_technician_id": str(incident.assigned_technician_id) if incident.assigned_technician_id else None,
+            "status": incident.status,
+        },
+    )
+
 
         return self._build_operation_state_response(incident)
 
@@ -223,6 +243,18 @@ class OperationsService:
         self._enqueue_notification_safely(
         lambda: self._enqueue_arrival_notification(incident_id)
         )
+
+        self._emit_audit_safely(
+        actor_user_id=str(current_user.id),
+        incident_id=str(incident.id),
+        provider_id=str(incident.provider_id) if incident.provider_id else None,
+        event_type=AUDIT_EVENT_INCIDENT_ARRIVED,
+        payload_json={
+            "status": incident.status,
+            "arrived_at": incident.arrived_at.isoformat() if incident.arrived_at else None,
+        },
+    )
+
 
         return self._build_operation_state_response(incident)
 
@@ -373,6 +405,18 @@ class OperationsService:
         lambda: self._enqueue_completion_notification(incident_id)
         )
 
+
+        self._emit_audit_safely(
+        actor_user_id=str(current_user.id),
+        incident_id=str(incident.id),
+        provider_id=str(incident.provider_id) if incident.provider_id else None,
+        event_type=AUDIT_EVENT_INCIDENT_COMPLETED,
+        payload_json={
+            "status": incident.status,
+            "completed_at": incident.completed_at.isoformat() if incident.completed_at else None,
+        },
+    )
+
         return self._build_operation_state_response(incident)
 
     def cancel_my_service(
@@ -458,6 +502,19 @@ class OperationsService:
         self._enqueue_notification_safely(
         lambda: self._enqueue_cancellation_notification(incident_id)
         )
+
+        self._sync_billing_cancellation_safely(incident_id)
+
+        self._emit_audit_safely(
+        actor_user_id=str(current_user.id),
+        incident_id=str(incident.id),
+        provider_id=str(incident.provider_id) if incident.provider_id else None,
+        event_type=AUDIT_EVENT_INCIDENT_CANCELLED,
+        payload_json={
+            "status": incident.status,
+            "cancelled_at": incident.cancelled_at.isoformat() if incident.cancelled_at else None,
+        },
+    )
 
         return self._build_operation_state_response(incident)
 
@@ -717,5 +774,38 @@ class OperationsService:
     def _enqueue_notification_safely(self, callback) -> None:
         try:
             callback()
+        except Exception:
+            return
+
+    def _sync_billing_cancellation_safely(self, incident_id: str) -> None:
+        try:
+            billing_service = BillingService(BillingRepository(self.repository.db))
+            billing_service.cancel_billing_due_to_incident_cancellation(incident_id)
+        except Exception:
+            return
+
+
+    def _emit_audit_safely(
+        self,
+        *,
+        actor_user_id: str | None,
+        incident_id: str | None,
+        provider_id: str | None,
+        event_type: str,
+        payload_json: dict | None,
+    ) -> None:
+        try:
+            AuditEventDispatcher().emit(
+                actor_user_id=actor_user_id,
+                incident_id=incident_id,
+                provider_id=provider_id,
+                request_id=None,
+                event_scope="DOMAIN",
+                event_type=event_type,
+                entity_type="INCIDENT",
+                entity_id=incident_id,
+                outcome="SUCCESS",
+                payload_json=payload_json,
+            )
         except Exception:
             return

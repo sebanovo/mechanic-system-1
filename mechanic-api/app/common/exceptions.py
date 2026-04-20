@@ -67,8 +67,11 @@ class ServiceUnavailableException(AppException):
 
 
 def register_exception_handlers(app: FastAPI) -> None:
+    def _request_id(request: Request) -> str | None:
+        return getattr(getattr(request, "state", None), "request_id", None)
+
     @app.exception_handler(AppException)
-    async def handle_app_exception(_: Request, exc: AppException) -> JSONResponse:
+    async def handle_app_exception(request: Request, exc: AppException) -> JSONResponse:
         return JSONResponse(
             status_code=exc.status_code,
             content={
@@ -77,12 +80,15 @@ def register_exception_handlers(app: FastAPI) -> None:
                 "error": {
                     "code": exc.error_code,
                 },
+                "meta": {
+                    "request_id": _request_id(request),
+                },
             },
         )
 
     @app.exception_handler(RequestValidationError)
     async def handle_validation_exception(
-        _: Request,
+        request: Request,
         exc: RequestValidationError,
     ) -> JSONResponse:
         return JSONResponse(
@@ -94,11 +100,14 @@ def register_exception_handlers(app: FastAPI) -> None:
                     "code": "validation_error",
                     "details": exc.errors(),
                 },
+                "meta": {
+                    "request_id": _request_id(request),
+                },
             },
         )
 
     @app.exception_handler(Exception)
-    async def handle_unexpected_exception(_: Request, exc: Exception) -> JSONResponse:
+    async def handle_unexpected_exception(request: Request, exc: Exception) -> JSONResponse:
         logger.exception("Unhandled exception: %s", exc)
 
         return JSONResponse(
@@ -108,6 +117,9 @@ def register_exception_handlers(app: FastAPI) -> None:
                 "message": "Internal server error.",
                 "error": {
                     "code": "internal_server_error",
+                },
+                "meta": {
+                    "request_id": _request_id(request),
                 },
             },
         )

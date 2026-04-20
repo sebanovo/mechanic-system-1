@@ -36,6 +36,9 @@ from app.common.constants import (
     SERVICE_CODE_TOWING,
     PUSH_EVENT_INCIDENT_ACCEPTED,
     PUSH_EVENT_NEW_ASSIGNMENT_AVAILABLE,
+    AUDIT_EVENT_INCIDENT_ACCEPTED,
+    AUDIT_EVENT_INCIDENT_PUBLISHED,
+
 )
 from app.common.exceptions import ConflictException, ForbiddenException, NotFoundException
 from app.services.assignment.models import IncidentAssignmentCandidate
@@ -52,6 +55,7 @@ from app.services.assignment.schemas import (
 from app.services.auth.models import User
 from app.services.catalog.models import ProviderService
 from app.services.notifications.dispatcher import PushNotificationDispatcher
+from app.services.audit.dispatcher import AuditEventDispatcher
 
 
 class AssignmentService:
@@ -132,6 +136,23 @@ class AssignmentService:
             self.repository.save(locked_incident)
             self.repository.create_candidates(candidates_to_create)
             self.repository.commit()
+            self._emit_audit_safely(
+            actor_user_id=None,
+            incident_id=str(locked_incident.id),
+            provider_id=None,
+            request_id=None,
+            event_scope="DOMAIN",
+            event_type=AUDIT_EVENT_INCIDENT_PUBLISHED,
+            entity_type="INCIDENT",
+            entity_id=str(locked_incident.id),
+            payload_json={
+                "used_category": used_category,
+                "used_priority": used_priority,
+                "required_service_codes": required_service_codes,
+                "published_candidates_count": len(ranked_candidates),
+            },
+            )
+
         except Exception:
             self.repository.rollback()
             raise
@@ -279,6 +300,23 @@ class AssignmentService:
 
         self._enqueue_notification_safely(
         lambda: self._enqueue_incident_accepted_notification(str(locked_incident.id))
+        )
+
+
+        self._emit_audit_safely(
+        actor_user_id=str(current_user.id),
+        incident_id=str(locked_incident.id),
+        provider_id=str(locked_provider.id),
+        request_id=None,
+        event_scope="DOMAIN",
+        event_type=AUDIT_EVENT_INCIDENT_ACCEPTED,
+        entity_type="INCIDENT",
+        entity_id=str(locked_incident.id),
+        payload_json={
+            "candidate_id": str(locked_candidate.id),
+            "provider_id": str(locked_provider.id),
+            "incident_status": locked_incident.status,
+        },
         )
 
 
@@ -700,33 +738,63 @@ class AssignmentService:
         )
 
 
-def _enqueue_incident_accepted_notification(self, incident_id: str) -> None:
-    dispatcher = PushNotificationDispatcher(self.repository.db)
-    incident = self.repository.get_incident_by_id(incident_id)
-    if incident is None or incident.provider is None:
-        return
+    def _enqueue_incident_accepted_notification(self, incident_id: str) -> None:
+        dispatcher = PushNotificationDispatcher(self.repository.db)
+        incident = self.repository.get_incident_by_id(incident_id)
+        if incident is None or incident.provider is None:
+            return
 
-    dispatcher.enqueue_event_for_user_ids(
-        requested_by_user_id=None,
-        incident_id=incident_id,
-        event_code=PUSH_EVENT_INCIDENT_ACCEPTED,
-        recipient_user_ids=[str(incident.client_user_id)],
-        title="Solicitud tomada",
-        body=(
-            f"{incident.provider.business_name} tomó tu solicitud y está preparando la atención."
-        ),
-        data={
-            "event_code": PUSH_EVENT_INCIDENT_ACCEPTED,
-            "incident_id": str(incident.id),
-            "provider_id": str(incident.provider_id),
-            "provider_name": incident.provider.business_name,
-            "status": incident.status,
-        },
-    )
+        dispatcher.enqueue_event_for_user_ids(
+            requested_by_user_id=None,
+            incident_id=incident_id,
+            event_code=PUSH_EVENT_INCIDENT_ACCEPTED,
+            recipient_user_ids=[str(incident.client_user_id)],
+            title="Solicitud tomada",
+            body=(
+                f"{incident.provider.business_name} tomó tu solicitud y está preparando la atención."
+            ),
+            data={
+                "event_code": PUSH_EVENT_INCIDENT_ACCEPTED,
+                "incident_id": str(incident.id),
+                "provider_id": str(incident.provider_id),
+                "provider_name": incident.provider.business_name,
+                "status": incident.status,
+            },
+        )
 
 
-def _enqueue_notification_safely(self, callback) -> None:
-    try:
-        callback()
-    except Exception:
-        return
+    def _enqueue_notification_safely(self, callback) -> None:
+        try:
+            callback()
+        except Exception:
+            return
+
+
+    def _emit_audit_safely(
+        self,
+        *,
+        actor_user_id: str | None,
+        incident_id: str | None,
+        provider_id: str | None,
+        request_id: str | None,
+        event_scope: str,
+        event_type: str,
+        entity_type: str | None,
+        entity_id: str | None,
+        payload_json: dict | None,
+    ) -> None:
+        try:
+            AuditEventDispatcher().emit(
+            actor_user_id=actor_user_id,
+            incident_id=incident_id,
+            provider_id=provider_id,
+            request_id=request_id,
+            event_scope=event_scope,
+            event_type=event_type,
+            entity_type=entity_type,
+            entity_id=entity_id,
+            outcome="SUCCESS",
+            payload_json=payload_json,
+            )
+        except Exception:
+            return

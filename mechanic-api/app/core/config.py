@@ -105,6 +105,21 @@ class Settings(BaseSettings):
     firebase_service_account_type: str = "service_account"
     firebase_service_account_json: str | None = None
 
+    trusted_hosts: str = "localhost,127.0.0.1"
+    docs_enabled_in_production: bool = False
+    security_headers_enabled: bool = True
+    https_redirect_enabled: bool = False
+    hsts_max_age_seconds: int = 31536000
+
+    request_id_header_name: str = "X-Request-ID"
+    response_time_header_name: str = "X-Response-Time-Ms"
+
+    audit_http_enabled: bool = True
+    audit_http_methods: str = "POST,PUT,PATCH,DELETE"
+    audit_excluded_paths: str = "/docs,/redoc,/openapi.json,/api/system/health,/api/system/readiness"
+
+    metrics_snapshot_retention_days: int = 30
+
     initial_platform_admin_email: str = "admin@mechanic.local"
     initial_platform_admin_password: str = "Admin12345"
     initial_platform_admin_first_name: str = "Platform"
@@ -162,6 +177,24 @@ class Settings(BaseSettings):
         if not self.firebase_service_account_json:
             return None
         return self.firebase_service_account_json.replace("\\n", "\n")
+
+    @property
+    def trusted_hosts_list(self) -> list[str]:
+        return [item.strip() for item in self.trusted_hosts.split(",") if item.strip()]
+
+    @property
+    def docs_enabled(self) -> bool:
+        if self.env_mode.lower() == "development":
+            return True
+        return self.docs_enabled_in_production
+
+    @property
+    def audit_http_methods_list(self) -> list[str]:
+        return [item.strip().upper() for item in self.audit_http_methods.split(",") if item.strip()]
+
+    @property
+    def audit_excluded_paths_list(self) -> list[str]:
+        return [item.strip() for item in self.audit_excluded_paths.split(",") if item.strip()]
 
 
 @lru_cache
