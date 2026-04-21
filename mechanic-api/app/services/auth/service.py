@@ -62,8 +62,6 @@ class AuthService:
                     "Provider profile information is required for mechanic or workshop registration."
                 )
 
-            provider_type = account_type
-
             new_user = User(
                 email=normalized_email,
                 password_hash=hash_password(payload.password),
@@ -77,18 +75,34 @@ class AuthService:
 
             new_provider = Provider(
                 owner_user_id=None,
-                provider_type=provider_type,
+                provider_type=account_type,
                 business_name=payload.provider_profile.business_name.strip(),
-                legal_name=payload.provider_profile.legal_name.strip() if payload.provider_profile.legal_name else None,
-                description=payload.provider_profile.description.strip() if payload.provider_profile.description else None,
-                contact_email=payload.provider_profile.contact_email.strip().lower()
-                if payload.provider_profile.contact_email
-                else None,
-                contact_phone=payload.provider_profile.contact_phone.strip()
-                if payload.provider_profile.contact_phone
-                else None,
+                legal_name=(
+                    payload.provider_profile.legal_name.strip()
+                    if payload.provider_profile.legal_name
+                    else None
+                ),
+                description=(
+                    payload.provider_profile.description.strip()
+                    if payload.provider_profile.description
+                    else None
+                ),
+                contact_email=(
+                    payload.provider_profile.contact_email.strip().lower()
+                    if payload.provider_profile.contact_email
+                    else None
+                ),
+                contact_phone=(
+                    payload.provider_profile.contact_phone.strip()
+                    if payload.provider_profile.contact_phone
+                    else None
+                ),
                 city=payload.provider_profile.city.strip() if payload.provider_profile.city else None,
-                address=payload.provider_profile.address.strip() if payload.provider_profile.address else None,
+                address=(
+                    payload.provider_profile.address.strip()
+                    if payload.provider_profile.address
+                    else None
+                ),
                 base_latitude=payload.provider_profile.base_latitude,
                 base_longitude=payload.provider_profile.base_longitude,
                 is_active=True,
@@ -96,11 +110,6 @@ class AuthService:
                 max_concurrent_services=payload.provider_profile.max_concurrent_services,
                 current_active_services=0,
                 average_rating=0.0,
-                offers_towing=payload.provider_profile.offers_towing,
-                offers_battery_service=payload.provider_profile.offers_battery_service,
-                offers_tire_service=payload.provider_profile.offers_tire_service,
-                offers_lockout_service=payload.provider_profile.offers_lockout_service,
-                offers_engine_diagnosis=payload.provider_profile.offers_engine_diagnosis,
             )
 
             created_user = self.repository.create_user_and_optional_provider(

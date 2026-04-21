@@ -22,6 +22,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN chmod +x /app/scripts/start.sh && chmod +x /app/scripts/start_worker.sh
+
 EXPOSE 8000
 
-CMD ["scripts/start.sh"]
+CMD ["/app/scripts/start.sh"]

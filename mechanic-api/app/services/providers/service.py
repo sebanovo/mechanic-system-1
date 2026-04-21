@@ -10,6 +10,7 @@ from app.services.providers.models import Provider, Technician
 from app.services.providers.repository import ProvidersRepository
 from app.services.providers.schemas import (
     CreateTechnicianRequest,
+    ProviderConfiguredServiceSummaryResponse,
     ProviderOnboardingRequest,
     ProviderOwnerResponse,
     ProviderResponse,
@@ -72,11 +73,6 @@ class ProvidersService:
             max_concurrent_services=payload.provider.max_concurrent_services,
             current_active_services=0,
             average_rating=0.0,
-            offers_towing=payload.provider.offers_towing,
-            offers_battery_service=payload.provider.offers_battery_service,
-            offers_tire_service=payload.provider.offers_tire_service,
-            offers_lockout_service=payload.provider.offers_lockout_service,
-            offers_engine_diagnosis=payload.provider.offers_engine_diagnosis,
         )
 
         created_provider = self.repository.create_provider(new_provider)
@@ -144,20 +140,10 @@ class ProvidersService:
         if payload.max_concurrent_services is not None:
             provider.max_concurrent_services = payload.max_concurrent_services
 
-        if payload.offers_towing is not None:
-            provider.offers_towing = payload.offers_towing
-
-        if payload.offers_battery_service is not None:
-            provider.offers_battery_service = payload.offers_battery_service
-
-        if payload.offers_tire_service is not None:
-            provider.offers_tire_service = payload.offers_tire_service
-
-        if payload.offers_lockout_service is not None:
-            provider.offers_lockout_service = payload.offers_lockout_service
-
-        if payload.offers_engine_diagnosis is not None:
-            provider.offers_engine_diagnosis = payload.offers_engine_diagnosis
+        if provider.current_active_services > provider.max_concurrent_services:
+            raise ConflictException(
+                "Current active services cannot be greater than max concurrent services."
+            )
 
         updated_provider = self.repository.save_provider(provider)
         return self._build_provider_response(updated_provider)
@@ -338,6 +324,41 @@ class ProvidersService:
             1 for technician in technicians if technician.is_available and technician.is_active
         )
 
+        active_provider_services = []
+        for provider_service in provider.provider_services:
+            catalog_item = provider_service.service_catalog_item
+            if not provider_service.is_active:
+                continue
+            if catalog_item is None or not catalog_item.is_active:
+                continue
+
+            price_estimate_min = (
+                float(provider_service.price_estimate_min)
+                if provider_service.price_estimate_min is not None
+                else None
+            )
+            price_estimate_max = (
+                float(provider_service.price_estimate_max)
+                if provider_service.price_estimate_max is not None
+                else None
+            )
+
+            active_provider_services.append(
+                ProviderConfiguredServiceSummaryResponse(
+                    id=str(provider_service.id),
+                    service_catalog_item_id=str(provider_service.service_catalog_item_id),
+                    code=catalog_item.code,
+                    category=catalog_item.category,
+                    title=provider_service.effective_title,
+                    price_estimate_min=price_estimate_min,
+                    price_estimate_max=price_estimate_max,
+                    estimated_duration_minutes=provider_service.estimated_duration_minutes,
+                    is_mobile_service_enabled=provider_service.is_mobile_service_enabled,
+                    is_emergency_service_enabled=provider_service.is_emergency_service_enabled,
+                    is_active=provider_service.is_active,
+                )
+            )
+
         owner_payload = ProviderOwnerResponse(
             id=str(owner_user.id),
             email=owner_user.email,
@@ -367,14 +388,12 @@ class ProvidersService:
             current_active_services=provider.current_active_services,
             available_capacity=provider.available_capacity,
             average_rating=provider.average_rating,
-            offers_towing=provider.offers_towing,
-            offers_battery_service=provider.offers_battery_service,
-            offers_tire_service=provider.offers_tire_service,
-            offers_lockout_service=provider.offers_lockout_service,
-            offers_engine_diagnosis=provider.offers_engine_diagnosis,
             owner_user=owner_payload,
             technicians_count=len(technicians),
             available_technicians_count=available_technicians_count,
+            configured_services_count=len(provider.provider_services),
+            active_services_count=len(active_provider_services),
+            active_services=active_provider_services,
             created_at=provider.created_at,
             updated_at=provider.updated_at,
         )
