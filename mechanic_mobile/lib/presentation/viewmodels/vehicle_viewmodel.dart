@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/entities/vehicle.dart';
-import '../../../domain/usecases/create_vehicle_usecase.dart';
-import '../../../domain/usecases/get_my_vehicles_usecase.dart';
-import '../../../domain/usecases/get_vehicle_by_id_usecase.dart';
-import '../../../domain/usecases/update_vehicle_usecase.dart';
+import '../../domain/entities/vehicle.dart';
+import '../../domain/usecases/create_vehicle_usecase.dart';
+import '../../domain/usecases/get_my_vehicles_usecase.dart';
+import '../../domain/usecases/get_vehicle_by_id_usecase.dart';
+import '../../domain/usecases/update_vehicle_usecase.dart';
 
 class VehicleViewModel extends ChangeNotifier {
   final CreateVehicleUseCase createVehicleUseCase;
@@ -63,7 +63,10 @@ class VehicleViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> updateVehicle(String vehicleId, Map<String, dynamic> body) async {
+  Future<bool> updateVehicle(
+    String vehicleId,
+    Map<String, dynamic> body,
+  ) async {
     isLoading = true;
     errorMessage = null;
     notifyListeners();

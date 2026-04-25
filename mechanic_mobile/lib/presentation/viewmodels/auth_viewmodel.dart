@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../domain/usecases/login_usecase.dart';
-import '../../../domain/usecases/register_usecase.dart';
-import '../../../domain/usecases/get_me_usecase.dart';
-import '../../../domain/usecases/get_my_profile_usecase.dart';
-import '../../../domain/usecases/update_my_profile_usecase.dart';
-import '../../../domain/entities/user.dart';
+import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/register_usecase.dart';
+import '../../domain/usecases/get_me_usecase.dart';
+import '../../domain/usecases/get_my_profile_usecase.dart';
+import '../../domain/usecases/update_my_profile_usecase.dart';
+import '../../domain/entities/user.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final LoginUseCase loginUseCase;

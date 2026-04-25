@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../domain/entities/service_request.dart';
-import '../../../domain/usecases/get_service_requests_usecase.dart';
+import '../../domain/entities/service_request.dart';
+import '../../domain/usecases/get_service_requests_usecase.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final GetServiceRequestsUseCase getServiceRequestsUseCase;

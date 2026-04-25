@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../domain/entities/service_request.dart';
+import '../../domain/entities/service_request.dart';
 
 class RequestDetailPage extends StatelessWidget {
   final ServiceRequest request;

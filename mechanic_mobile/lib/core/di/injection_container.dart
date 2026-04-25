@@ -9,8 +9,8 @@ import 'package:mechanic_mobile/infrastructure/datasources/mock_service_data_sou
 import 'package:mechanic_mobile/infrastructure/datasources/vehicle_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/service_request_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/vehicle_repository_impl.dart';
-import 'package:mechanic_mobile/presentation/home/viewmodels/home_viewmodel.dart';
-import 'package:mechanic_mobile/presentation/vehicles/viewmodels/vehicle_viewmodel.dart';
+import 'package:mechanic_mobile/presentation/viewmodels/home_viewmodel.dart';
+import 'package:mechanic_mobile/presentation/viewmodels/vehicle_viewmodel.dart';
 
 // CORE
 import '../../core/network/api_client.dart';
@@ -29,7 +29,7 @@ import '../../domain/usecases/update_my_profile_usecase.dart';
 import '../../domain/usecases/update_vehicle_usecase.dart';
 
 // PRESENTATION
-import '../../presentation/auth/viewmodels/auth_viewmodel.dart';
+import '../../presentation/viewmodels/auth_viewmodel.dart';
 
 final sl = GetIt.instance;
 
@@ -82,15 +82,6 @@ Future<void> init() async {
   // =========================
   // 🧩 VIEWMODELS
   // =========================
-  // sl.registerFactory(
-  //   () => AuthViewModel(
-  //     sl<LoginUseCase>(),
-  //     sl<RegisterUseCase>(),
-  //     sl<GetMeUseCase>(),
-  //     sl<GetMyProfileUseCase>(),
-  //     sl<UpdateMyProfileUseCase>(),
-  //   ),
-  // );
   sl.registerLazySingleton(
     () => AuthViewModel(
       sl<LoginUseCase>(),
@@ -114,14 +105,4 @@ Future<void> init() async {
       updateVehicleUseCase: sl(),
     ),
   );
-
-  // (si usas home)
-  // sl.registerFactory(
-  //   () => HomeViewModel(
-  //     getServiceRequestsUseCase: sl(),
-  //   ),
-  // );
-
-  print(sl.isRegistered<HomeViewModel>());
-  print(sl.isRegistered<AuthViewModel>());
 }
