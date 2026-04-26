@@ -302,22 +302,6 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
 
-                  _buildDrawerItem(
-                    icon: Icons.history,
-                    title: 'Historial',
-                    onTap: () {
-                      _showInfoSnackBar('Historial (próximamente)');
-                    },
-                  ),
-
-                  _buildDrawerItem(
-                    icon: Icons.support_agent,
-                    title: 'Soporte',
-                    onTap: () {
-                      _showInfoSnackBar('Soporte (próximamente)');
-                    },
-                  ),
-
                   const Divider(),
 
                   _buildDrawerItem(
