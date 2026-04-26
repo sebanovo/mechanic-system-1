@@ -16,6 +16,28 @@ export const APP_NAVIGATION: AppNavigationItem[] = [
 		allowedRoles: ["PLATFORM_ADMIN", "PROVIDER_ADMIN"],
 	},
 	{
+		label: "Mi empresa",
+		route: "/app/empresa/profile",
+		exact: true,
+		icon: {
+			type: "remix",
+			name: "ri-building2-line",
+		},
+		allowedRoles: ["PROVIDER_ADMIN"],
+	},
+
+	{
+		label: "Mis Tecnicos",
+		route: "/app/provider-me",
+		exact: true,
+		icon: {
+			type: "remix",
+			name: "ri-team-line",
+		},
+		allowedRoles: ["PROVIDER_ADMIN"],
+	},
+
+	{
 		label: "Usuarios",
 		route: "/app/users",
 		icon: {
@@ -63,7 +85,7 @@ export const APP_NAVIGATION: AppNavigationItem[] = [
 			type: "remix",
 			name: "ri-file-list-3-line",
 		},
-		allowedRoles: ["CLIENT", "PROVIDER_ADMIN", "PLATFORM_ADMIN"],
+		allowedRoles: ["CLIENT"],
 	},
 
 	{

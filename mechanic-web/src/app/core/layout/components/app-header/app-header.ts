@@ -85,7 +85,7 @@ export class AppHeader {
 	}
 
 	onClickPerfil(): void {
-		// this.router.navigate(["/profile"]);
+		this.router.navigate(["/app/users/profile"]);
 		console.log("Profile click");
 	}
 
