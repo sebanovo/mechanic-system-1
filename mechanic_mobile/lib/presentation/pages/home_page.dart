@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../viewmodels/home_viewmodel.dart';
+import '../viewmodels/auth_viewmodel.dart';
 import '../../core/di/injection_container.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,11 +13,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late HomeViewModel _viewModel;
+  late AuthViewModel _authViewModel;
 
   @override
   void initState() {
     super.initState();
     _viewModel = sl<HomeViewModel>();
+    _authViewModel = sl<AuthViewModel>();
+
+    // Cargar datos del usuario si no existen
+    if (_authViewModel.user == null) {
+      _authViewModel.loadMe();
+    }
+
     _viewModel.loadRequests();
   }
 
@@ -44,9 +53,36 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _logout() {
-    // TODO: Call auth.logout()
+    _authViewModel.logout();
     _showInfoSnackBar('Sesión cerrada correctamente');
     context.go('/login');
+  }
+
+  // ✅ Obtener el primer rol de la lista de roleCodes
+  String? _getUserRole(List<String>? roleCodes) {
+    if (roleCodes == null || roleCodes.isEmpty) return null;
+    return roleCodes.first;
+  }
+
+  String _getRoleDisplayName(List<String>? roleCodes) {
+    final role = _getUserRole(roleCodes);
+    switch (role) {
+      case 'PROVIDER_ADMIN':
+        return 'Taller / Proveedor';
+      case 'CLIENT':
+        return 'Cliente';
+      case 'PLATFORM_ADMIN':
+        return 'Administrador';
+      case 'TECHNICIAN':
+        return 'Técnico';
+      default:
+        return 'Usuario';
+    }
+  }
+
+  // ✅ Verificar si el usuario tiene un rol específico
+  bool _hasRole(List<String>? roleCodes, String role) {
+    return roleCodes?.contains(role) ?? false;
   }
 
   @override
@@ -58,13 +94,15 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: Colors.white,
         elevation: 2,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.directions_car),
-            onPressed: () {
-              context.push('/vehicles');
-            },
-            tooltip: 'Mis vehículos',
-          ),
+          // Solo mostrar vehículos si es CLIENT
+          if (_hasRole(_authViewModel.user?.roleCodes, 'CLIENT'))
+            IconButton(
+              icon: const Icon(Icons.directions_car),
+              onPressed: () {
+                context.push('/vehicles');
+              },
+              tooltip: 'Mis vehículos',
+            ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,
@@ -72,87 +110,146 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: Container(
-          color: Colors.blue.shade50,
-          child: Column(
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(color: Colors.blue.shade800),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.person, size: 35, color: Colors.blue),
+      drawer: ListenableBuilder(
+        listenable: _authViewModel,
+        builder: (context, _) {
+          final user = _authViewModel.user;
+          final userRole = _getUserRole(user?.roleCodes);
+          final isProvider = _hasRole(user?.roleCodes, 'PROVIDER_ADMIN');
+          final isClient = _hasRole(user?.roleCodes, 'CLIENT');
+
+          return Drawer(
+            child: Container(
+              color: Colors.blue.shade50,
+              child: Column(
+                children: [
+                  DrawerHeader(
+                    decoration: BoxDecoration(color: Colors.blue.shade800),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                _getRoleIcon(userRole),
+                                size: 35,
+                                color: Colors.blue.shade800,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          user?.fullName ?? 'Cargando...',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          user?.email ?? '',
+                          style: TextStyle(
+                            color: Colors.blue.shade100,
+                            fontSize: 14,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white24,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            _getRoleDisplayName(user?.roleCodes),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Usuario Demo',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+
+                  // Opciones del menú
+                  _buildDrawerItem(
+                    icon: Icons.home,
+                    title: 'Inicio',
+                    onTap: () {
+                      context.pop();
+                    },
+                  ),
+
+                  // Solo mostrar vehículos si es CLIENT
+                  if (isClient)
+                    _buildDrawerItem(
+                      icon: Icons.directions_car,
+                      title: 'Mis vehículos',
+                      onTap: () {
+                        context.pop();
+                        context.push('/vehicles');
+                      },
                     ),
-                    Text(
-                      'cliente@ejemplo.com',
-                      style: TextStyle(
-                        color: Colors.blue.shade100,
-                        fontSize: 14,
-                      ),
+
+                  // Solo mostrar técnicos si es PROVIDER_ADMIN
+                  if (isProvider)
+                    _buildDrawerItem(
+                      icon: Icons.construction,
+                      title: 'Mis Técnicos',
+                      onTap: () {
+                        context.pop();
+                        context.push('/technicians');
+                      },
                     ),
-                  ],
-                ),
+
+                  _buildDrawerItem(
+                    icon: Icons.history,
+                    title: 'Historial',
+                    onTap: () {
+                      _showInfoSnackBar('Historial (próximamente)');
+                    },
+                  ),
+
+                  _buildDrawerItem(
+                    icon: Icons.person,
+                    title: 'Mi perfil',
+                    onTap: () {
+                      _showInfoSnackBar('Perfil (próximamente)');
+                    },
+                  ),
+
+                  _buildDrawerItem(
+                    icon: Icons.support_agent,
+                    title: 'Soporte',
+                    onTap: () {
+                      _showInfoSnackBar('Soporte (próximamente)');
+                    },
+                  ),
+
+                  const Divider(),
+
+                  _buildDrawerItem(
+                    icon: Icons.logout,
+                    title: 'Cerrar sesión',
+                    onTap: _logout,
+                    isDestructive: true,
+                  ),
+                ],
               ),
-              _buildDrawerItem(
-                icon: Icons.home,
-                title: 'Inicio',
-                onTap: () {
-                  context.pop();
-                },
-              ),
-              _buildDrawerItem(
-                icon: Icons.directions_car,
-                title: 'Mis vehículos',
-                onTap: () {
-                  context.pop();
-                  context.push('/vehicles');
-                },
-              ),
-              _buildDrawerItem(
-                icon: Icons.history,
-                title: 'Historial',
-                onTap: () {
-                  _showInfoSnackBar('Historial (próximamente)');
-                },
-              ),
-              _buildDrawerItem(
-                icon: Icons.person,
-                title: 'Mi perfil',
-                onTap: () {
-                  _showInfoSnackBar('Perfil (próximamente)');
-                },
-              ),
-              _buildDrawerItem(
-                icon: Icons.support_agent,
-                title: 'Soporte',
-                onTap: () {
-                  _showInfoSnackBar('Soporte (próximamente)');
-                },
-              ),
-              const Divider(),
-              _buildDrawerItem(
-                icon: Icons.logout,
-                title: 'Cerrar sesión',
-                onTap: _logout,
-                isDestructive: true,
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
       body: ListenableBuilder(
         listenable: _viewModel,
@@ -237,17 +334,17 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          _showInfoSnackBar('Reportar nueva emergencia');
-          // TODO: Navigate to create request page
-          // context.push('/new-request');
-        },
-        icon: const Icon(Icons.add),
-        label: const Text('Nueva solicitud'),
-        backgroundColor: Colors.blue.shade700,
-        foregroundColor: Colors.white,
-      ),
+      floatingActionButton: _hasRole(_authViewModel.user?.roleCodes, 'CLIENT')
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                _showInfoSnackBar('Reportar nueva emergencia');
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Nueva solicitud'),
+              backgroundColor: Colors.blue.shade700,
+              foregroundColor: Colors.white,
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
@@ -276,8 +373,22 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  IconData _getRoleIcon(String? roleCode) {
+    switch (roleCode) {
+      case 'PROVIDER_ADMIN':
+        return Icons.build_circle;
+      case 'CLIENT':
+        return Icons.person;
+      case 'PLATFORM_ADMIN':
+        return Icons.admin_panel_settings;
+      case 'TECHNICIAN':
+        return Icons.handyman;
+      default:
+        return Icons.person;
+    }
+  }
+
   Widget _buildRequestCard(dynamic request) {
-    // Mapeo de estados a colores e íconos
     final statusConfig = _getStatusConfig(request.status);
 
     return Card(
@@ -396,21 +507,6 @@ class _HomePageState extends State<HomePage> {
         return {'color': Colors.red, 'icon': Icons.cancel};
       default:
         return {'color': Colors.grey, 'icon': Icons.help_outline};
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final diff = now.difference(date);
-
-    if (diff.inDays > 0) {
-      return '${diff.inDays}d';
-    } else if (diff.inHours > 0) {
-      return '${diff.inHours}h';
-    } else if (diff.inMinutes > 0) {
-      return '${diff.inMinutes}m';
-    } else {
-      return 'Ahora';
     }
   }
 }

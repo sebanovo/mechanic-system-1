@@ -36,9 +36,9 @@ class AuthRemoteDataSource {
     return (token, user);
   }
 
+  // ✅ Método me() - Obtener usuario autenticado
   Future<UserModel> me() async {
     final response = await api.get("/api/auth/me");
-
     return UserModel.fromJson(response.data["data"]);
   }
 

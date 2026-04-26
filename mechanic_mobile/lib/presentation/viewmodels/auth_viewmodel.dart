@@ -25,6 +25,12 @@ class AuthViewModel extends ChangeNotifier {
     this.updateMyProfileUseCase,
   );
 
+  void logout() {
+    user = null;
+    // Aquí también podrías limpiar el token del ApiClient si es necesario
+    notifyListeners();
+  }
+
   Future<bool> login(String email, String password) async {
     isLoading = true;
     errorMessage = null;
@@ -32,6 +38,7 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       user = await loginUseCase(email, password);
+      debugPrint('✅ User role: ${user?.roleCodes}');
       return true; // ✅ éxito
     } catch (e) {
       errorMessage = e.toString(); // ✅ capturas error
