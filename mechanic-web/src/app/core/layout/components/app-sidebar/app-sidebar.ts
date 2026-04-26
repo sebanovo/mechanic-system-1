@@ -15,12 +15,15 @@ import {
 } from "@ng-icons/lucide";
 import {
 	remixBarChartBoxLine,
+	remixBuilding2Fill,
+	remixBuilding2Line,
 	remixBuildingLine,
 	remixDashboardLine,
 	remixFileList3Line,
 	remixKeyLine,
 	remixPriceTag3Line,
 	remixShieldKeyholeLine,
+	remixTeamLine,
 	remixVipCrownLine,
 } from "@ng-icons/remixicon";
 import { HlmButtonImports } from "@shared/ui/button";
@@ -61,6 +64,9 @@ import { AppLayoutState } from "../../services/app-layout.state";
 			remixShieldKeyholeLine,
 			remixVipCrownLine,
 			remixKeyLine,
+			remixBuilding2Fill,
+			remixBuilding2Line,
+			remixTeamLine,
 		}),
 	],
 	templateUrl: "./app-sidebar.html",
@@ -120,6 +126,8 @@ export class AppSidebar {
 	protected resolveIconName(item: AppNavigationLinkItem): string {
 		const iconMap: Record<string, string> = {
 			"ri-dashboard-line": "remixDashboardLine",
+			"ri-building2-line": "remixBuilding2Line",
+			"ri-team-line": "remixTeamLine",
 			"ri-building-line": "remixBuildingLine",
 			"ri-vip-crown-line": "remixVipCrownLine",
 			users: "lucideUsers",

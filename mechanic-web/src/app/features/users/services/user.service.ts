@@ -1,49 +1,47 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
-import { CreateUserRequest } from "../models/user-request.type";
-import { UserDto } from "../models/user.dto";
-import { UpdateUserRequest } from "../models/user.model";
-import { UserResponse } from "../models/user.response";
+import {
+	ApiResponse,
+	GetUsersParams,
+	UpdateOwnProfileRequest,
+	UserDto,
+	UsersMetaDto,
+} from "../models/user.types";
 
 @Injectable({
-  providedIn: "root",
+	providedIn: "root",
 })
 export class UsersApi {
-  private readonly http = inject(HttpClient);
+	private readonly http = inject(HttpClient);
 
-  getUsers(): Observable<UserDto[]> {
-    return this.http
-      .get<UserResponse<UserDto[]>>("/api/users")
-      .pipe(map(response => response.data));
-  }
-  createUser(payload: CreateUserRequest): Observable<UserDto> {
-    return this.http
-      .post<UserResponse<UserDto>>("/api/users", payload)
-      .pipe(map(response => response.data));
-  }
+	getOwnProfile(): Observable<UserDto> {
+		return this.http
+			.get<ApiResponse<UserDto>>("/api/users/me/profile")
+			.pipe(map(response => response.data));
+	}
 
-  getUserById(userId: string): Observable<UserDto> {
-    return this.http
-      .get<UserResponse<UserDto>>(`/api/users/${userId}`)
-      .pipe(map(response => response.data));
-  }
+	updateOwnProfile(payload: UpdateOwnProfileRequest): Observable<UserDto> {
+		return this.http
+			.patch<ApiResponse<UserDto>>("/api/users/me/profile", payload)
+			.pipe(map(response => response.data));
+	}
 
-  updateUser(userId: string, payload: UpdateUserRequest): Observable<UserDto> {
-    return this.http
-      .put<UserResponse<UserDto>>(`/api/users/${userId}`, payload)
-      .pipe(map(response => response.data));
-  }
+	getUsers(
+		params: GetUsersParams
+	): Observable<ApiResponse<UserDto[], UsersMetaDto>> {
+		const httpParams = new HttpParams()
+			.set("limit", params.limit)
+			.set("offset", params.offset);
 
-  activateUser(userId: string): Observable<UserDto> {
-    return this.http
-      .patch<UserResponse<UserDto>>(`/api/users/${userId}/activate`, {})
-      .pipe(map(response => response.data));
-  }
+		return this.http.get<ApiResponse<UserDto[], UsersMetaDto>>("/api/users", {
+			params: httpParams,
+		});
+	}
 
-  deactivateUser(userId: string): Observable<UserDto> {
-    return this.http
-      .patch<UserResponse<UserDto>>(`/api/users/${userId}/deactivate`, {})
-      .pipe(map(response => response.data));
-  }
+	getUserById(userId: string): Observable<UserDto> {
+		return this.http
+			.get<ApiResponse<UserDto>>(`/api/users/${userId}`)
+			.pipe(map(response => response.data));
+	}
 }

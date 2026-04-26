@@ -3,215 +3,291 @@ import { firstValueFrom } from "rxjs";
 
 import { AppHttpError } from "../../../core/http/models/app-http-error.model";
 import {
-  toCreateUserRequest,
-  toUpdateUserRequest,
-  toUser,
-  toUsers,
+	toGetUsersParams,
+	toUpdateOwnProfileRequest,
+	toUser,
+	toUsers,
 } from "../adapters/user.adapter";
+
 import {
-  UpdateUserRequest,
-  type User,
-  UserUpsertFormValue,
-} from "../models/user.model";
+	UpdateOwnProfileFormValue,
+	User,
+	UsersMetaDto,
+} from "../models/user.types";
 import { UsersApi } from "../services/user.service";
 
 @Injectable({
-  providedIn: "root",
+	providedIn: "root",
 })
 export class UsersStore {
-  private readonly usersApi = inject(UsersApi);
+	private readonly usersApi = inject(UsersApi);
 
-  readonly users = signal<User[]>([]);
-  readonly loading = signal(false);
-  readonly hasLoaded = signal(false);
-  readonly error = signal<AppHttpError | null>(null);
-  readonly hasError = computed(() => this.error() !== null);
+	// =============================
+	// LISTADO
+	// =============================
 
-  readonly submitting = signal(false);
-  readonly createError = signal<AppHttpError | null>(null);
-  readonly hasCreateError = computed(() => this.createError() !== null);
+	readonly users = signal<User[]>([]);
+	readonly loading = signal(false);
+	readonly hasLoaded = signal(false);
+	readonly error = signal<AppHttpError | null>(null);
+	readonly hasError = computed(() => this.error() !== null);
 
-  readonly selectedUser = signal<User | null>(null);
-  readonly selectedUserLoading = signal(false);
-  readonly selectedUserError = signal<AppHttpError | null>(null);
-  readonly hasSelectedUserError = computed(
-    () => this.selectedUserError() !== null
-  );
+	// =============================
+	// PAGINACIÓN
+	// =============================
 
-  readonly updateError = signal<AppHttpError | null>(null);
-  readonly hasUpdateError = computed(() => this.updateError() !== null);
+	readonly limit = signal(4); // <-- cambiar aqui si quieres 20
+	readonly offset = signal(0);
+	readonly meta = signal<UsersMetaDto | null>(null);
 
-  // activate and deactivate signal
-  readonly togglingUserIds = signal<string[]>([]);
-  readonly toggleError = signal<AppHttpError | null>(null);
-  readonly hasToggleError = computed(() => this.toggleError() !== null);
+	readonly lastPageReached = signal(false);
 
-  readonly isEmpty = computed(
-    () => this.hasLoaded() && !this.loading() && this.users().length === 0
-  );
+	readonly canGoPrevious = computed(() => this.offset() > 0 && !this.loading());
 
-  async loadUsers(): Promise<void> {
-    this.loading.set(true);
-    this.error.set(null);
+	readonly canGoNext = computed(
+		() =>
+			!this.loading() &&
+			!this.lastPageReached() &&
+			this.users().length === this.limit()
+	);
 
-    try {
-      const userDtos = await firstValueFrom(this.usersApi.getUsers());
-      this.users.set(toUsers(userDtos));
-      this.hasLoaded.set(true);
-    } catch (error) {
-      this.error.set(error as AppHttpError);
-      this.users.set([]);
-      this.hasLoaded.set(true);
-    } finally {
-      this.loading.set(false);
-    }
-  }
+	readonly currentPageLabel = computed(() => {
+		const start = this.offset() + 1;
+		const end = this.offset() + this.users().length;
 
-  async createUser(formValue: UserUpsertFormValue): Promise<User | null> {
-    this.submitting.set(true);
-    this.createError.set(null);
+		return this.users().length === 0
+			? "Sin resultados"
+			: `Mostrando ${start} - ${end}`;
+	});
 
-    try {
-      const payload = toCreateUserRequest(formValue);
-      const createdUserDto = await firstValueFrom(
-        this.usersApi.createUser(payload)
-      );
-      const createdUser = toUser(createdUserDto);
+	readonly isEmpty = computed(
+		() => this.hasLoaded() && !this.loading() && this.users().length === 0
+	);
 
-      this.users.update(currentUsers => [createdUser, ...currentUsers]);
+	// DETALLE
 
-      return createdUser;
-    } catch (error) {
-      this.createError.set(error as AppHttpError);
-      return null;
-    } finally {
-      this.submitting.set(false);
-    }
-  }
+	readonly selectedUser = signal<User | null>(null);
+	readonly selectedUserLoading = signal(false);
+	readonly selectedUserError = signal<AppHttpError | null>(null);
+	readonly hasSelectedUserError = computed(
+		() => this.selectedUserError() !== null
+	);
 
-  async loadUserById(userId: string): Promise<User | null> {
-    this.selectedUserLoading.set(true);
-    this.selectedUserError.set(null);
-    this.selectedUser.set(null);
+	// PERFIL PROPIO
 
-    try {
-      const userDto = await firstValueFrom(this.usersApi.getUserById(userId));
-      const user = toUser(userDto);
+	readonly ownProfile = signal<User | null>(null);
+	readonly ownProfileLoading = signal(false);
+	readonly ownProfileError = signal<AppHttpError | null>(null);
+	readonly hasOwnProfileError = computed(() => this.ownProfileError() !== null);
 
-      this.selectedUser.set(user);
+	readonly updatingOwnProfile = signal(false);
+	readonly updateOwnProfileError = signal<AppHttpError | null>(null);
+	readonly hasUpdateOwnProfileError = computed(
+		() => this.updateOwnProfileError() !== null
+	);
 
-      return user;
-    } catch (error) {
-      this.selectedUserError.set(error as AppHttpError);
-      this.selectedUser.set(null);
-      return null;
-    } finally {
-      this.selectedUserLoading.set(false);
-    }
-  }
+	// LOAD USERS
 
-  async updateUser(
-    userId: string,
-    formValue: UserUpsertFormValue
-  ): Promise<User | null> {
-    this.submitting.set(true);
-    this.updateError.set(null);
+	async loadUsers(limit = this.limit(), offset = this.offset()): Promise<void> {
+		this.loading.set(true);
+		this.error.set(null);
 
-    try {
-      const payload: UpdateUserRequest = toUpdateUserRequest(formValue);
-      const updatedUserDto = await firstValueFrom(
-        this.usersApi.updateUser(userId, payload)
-      );
-      const updatedUser = toUser(updatedUserDto);
+		try {
+			const params = toGetUsersParams(limit, offset);
 
-      this.selectedUser.set(updatedUser);
+			const response = await firstValueFrom(this.usersApi.getUsers(params));
 
-      this.users.update(currentUsers =>
-        currentUsers.map(user =>
-          user.id === updatedUser.id ? updatedUser : user
-        )
-      );
+			const mappedUsers = toUsers(response.data);
 
-      return updatedUser;
-    } catch (error) {
-      this.updateError.set(error as AppHttpError);
-      return null;
-    } finally {
-      this.submitting.set(false);
-    }
-  }
+			this.users.set(mappedUsers);
+			this.meta.set(response.meta);
+			this.limit.set(response.meta.limit);
+			this.offset.set(response.meta.offset);
 
-  async toggleUserActiveState(user: User): Promise<User | null> {
-    this.startTogglingUser(user.id);
-    this.toggleError.set(null);
+			this.lastPageReached.set(mappedUsers.length < response.meta.limit);
 
-    try {
-      const updatedUserDto = user.isActive
-        ? await firstValueFrom(this.usersApi.deactivateUser(user.id))
-        : await firstValueFrom(this.usersApi.activateUser(user.id));
+			this.hasLoaded.set(true);
+		} catch (error) {
+			this.error.set(error as AppHttpError);
+			this.users.set([]);
+			this.meta.set(null);
+			this.hasLoaded.set(true);
+		} finally {
+			this.loading.set(false);
+		}
+	}
 
-      const updatedUser = toUser(updatedUserDto);
+	// NEXT PAGE
 
-      this.users.update(currentUsers =>
-        currentUsers.map(currentUser =>
-          currentUser.id === updatedUser.id ? updatedUser : currentUser
-        )
-      );
+	async nextPage(): Promise<void> {
+		if (!this.canGoNext()) {
+			return;
+		}
 
-      if (this.selectedUser()?.id === updatedUser.id) {
-        this.selectedUser.set(updatedUser);
-      }
+		const currentUsers = this.users();
+		const currentOffset = this.offset();
+		const nextOffset = currentOffset + this.limit();
 
-      return updatedUser;
-    } catch (error) {
-      this.toggleError.set(error as AppHttpError);
-      return null;
-    } finally {
-      this.finishTogglingUser(user.id);
-    }
-  }
+		this.loading.set(true);
+		this.error.set(null);
 
-  isUserToggling(userId: string): boolean {
-    return this.togglingUserIds().includes(userId);
-  }
+		try {
+			const response = await firstValueFrom(
+				this.usersApi.getUsers({
+					limit: this.limit(),
+					offset: nextOffset,
+				})
+			);
 
-  private startTogglingUser(userId: string): void {
-    this.togglingUserIds.update(currentIds =>
-      currentIds.includes(userId) ? currentIds : [...currentIds, userId]
-    );
-  }
+			const mappedUsers = toUsers(response.data);
 
-  private finishTogglingUser(userId: string): void {
-    this.togglingUserIds.update(currentIds =>
-      currentIds.filter(currentId => currentId !== userId)
-    );
-  }
+			//  CASO IMPORTANTE: NO HAY MÁS DATOS
+			if (mappedUsers.length === 0) {
+				this.users.set(currentUsers);
+				this.offset.set(currentOffset);
+				this.lastPageReached.set(true);
+				return;
+			}
 
-  clearError(): void {
-    this.error.set(null);
-  }
+			this.users.set(mappedUsers);
+			this.offset.set(response.meta.offset);
+			this.limit.set(response.meta.limit);
 
-  clearCreateError(): void {
-    this.createError.set(null);
-  }
+			this.lastPageReached.set(mappedUsers.length < response.meta.limit);
+		} catch (error) {
+			this.error.set(error as AppHttpError);
+		} finally {
+			this.loading.set(false);
+		}
+	}
 
-  reloadUsers(): Promise<void> {
-    return this.loadUsers();
-  }
+	// PREVIOUS PAGE
 
-  clearSelectedUserError(): void {
-    this.selectedUserError.set(null);
-  }
+	async previousPage(): Promise<void> {
+		if (!this.canGoPrevious()) {
+			return;
+		}
 
-  clearUpdateError(): void {
-    this.updateError.set(null);
-  }
+		const previousOffset = Math.max(this.offset() - this.limit(), 0);
 
-  clearSelectedUser(): void {
-    this.selectedUser.set(null);
-  }
+		await this.loadUsers(this.limit(), previousOffset);
+	}
 
-  clearToggleError(): void {
-    this.toggleError.set(null);
-  }
+	// HELPERS PAGINACIÓN
+
+	async reloadUsers(): Promise<void> {
+		this.lastPageReached.set(false);
+		await this.loadUsers(this.limit(), this.offset());
+	}
+
+	async resetPagination(): Promise<void> {
+		this.offset.set(0);
+		this.lastPageReached.set(false);
+		await this.loadUsers(this.limit(), 0);
+	}
+
+	// DETALLE
+
+	async loadUserById(userId: string): Promise<User | null> {
+		this.selectedUserLoading.set(true);
+		this.selectedUserError.set(null);
+		this.selectedUser.set(null);
+
+		try {
+			const userDto = await firstValueFrom(this.usersApi.getUserById(userId));
+
+			const user = toUser(userDto);
+
+			this.selectedUser.set(user);
+
+			return user;
+		} catch (error) {
+			this.selectedUserError.set(error as AppHttpError);
+			this.selectedUser.set(null);
+			return null;
+		} finally {
+			this.selectedUserLoading.set(false);
+		}
+	}
+
+	// PERFIL PROPIO
+
+	async loadOwnProfile(): Promise<User | null> {
+		this.ownProfileLoading.set(true);
+		this.ownProfileError.set(null);
+
+		try {
+			const userDto = await firstValueFrom(this.usersApi.getOwnProfile());
+
+			const user = toUser(userDto);
+
+			this.ownProfile.set(user);
+
+			return user;
+		} catch (error) {
+			this.ownProfileError.set(error as AppHttpError);
+			this.ownProfile.set(null);
+			return null;
+		} finally {
+			this.ownProfileLoading.set(false);
+		}
+	}
+
+	async updateOwnProfile(
+		formValue: UpdateOwnProfileFormValue
+	): Promise<User | null> {
+		this.updatingOwnProfile.set(true);
+		this.updateOwnProfileError.set(null);
+
+		try {
+			const payload = toUpdateOwnProfileRequest(formValue);
+
+			const userDto = await firstValueFrom(
+				this.usersApi.updateOwnProfile(payload)
+			);
+
+			const user = toUser(userDto);
+
+			this.ownProfile.set(user);
+
+			// sincroniza con detalle
+			if (this.selectedUser()?.id === user.id) {
+				this.selectedUser.set(user);
+			}
+
+			// sincroniza con lista
+			this.users.update(current =>
+				current.map(u => (u.id === user.id ? user : u))
+			);
+
+			return user;
+		} catch (error) {
+			this.updateOwnProfileError.set(error as AppHttpError);
+			return null;
+		} finally {
+			this.updatingOwnProfile.set(false);
+		}
+	}
+
+	// CLEANERS
+
+	clearError(): void {
+		this.error.set(null);
+	}
+
+	clearSelectedUser(): void {
+		this.selectedUser.set(null);
+	}
+
+	clearSelectedUserError(): void {
+		this.selectedUserError.set(null);
+	}
+
+	clearOwnProfileError(): void {
+		this.ownProfileError.set(null);
+	}
+
+	clearUpdateOwnProfileError(): void {
+		this.updateOwnProfileError.set(null);
+	}
 }

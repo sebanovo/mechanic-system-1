@@ -86,11 +86,26 @@ export const routes: Routes = [
 			//       m => m.SUBSCRIPTIONS_ROUTES
 			//     ),
 			// },
-			// {
-			//   path: "users",
-			//   loadChildren: () =>
-			//     import("./features/users/users.routes").then(m => m.USERS_ROUTES),
-			// },
+			{
+				path: "providers",
+				loadChildren: () =>
+					import("./features/providers/provider.routes").then(
+						m => m.PROVIDERS_ROUTES
+					),
+			},
+
+			{
+				path: "provider-me",
+				loadChildren: () =>
+					import("./features/provider-me/provider-me.routes").then(
+						m => m.PROVIDER_ME_ROUTES
+					),
+			},
+			{
+				path: "users",
+				loadChildren: () =>
+					import("./features/users/users.routes").then(m => m.USERS_ROUTES),
+			},
 			// {
 			//   path: "plans",
 			//   canMatch: [adminGuard],
