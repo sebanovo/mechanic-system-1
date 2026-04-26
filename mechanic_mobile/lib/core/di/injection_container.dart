@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:mechanic_mobile/domain/repositories/service_request_repository.dart';
 import 'package:mechanic_mobile/domain/repositories/vehicle_repository.dart';
+import 'package:mechanic_mobile/domain/usecases/accept_candidate_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/add_file_evidence_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/add_text_evidence_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/cancel_incident_usecase.dart';
@@ -9,6 +10,8 @@ import 'package:mechanic_mobile/domain/usecases/create_provider_service_usecase.
 import 'package:mechanic_mobile/domain/usecases/create_technician_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/create_vehicle_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_all_incidents_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/get_available_candidates_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/get_candidate_details_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_catalog_services_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_incident_candidates_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_incident_details_usecase.dart';
@@ -20,6 +23,7 @@ import 'package:mechanic_mobile/domain/usecases/get_my_vehicles_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_technicians_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_vehicle_by_id_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/publish_incident_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/reject_candidate_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/update_incident_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/update_provider_profile_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/update_technician_usecase.dart';
@@ -28,6 +32,7 @@ import 'package:mechanic_mobile/infrastructure/datasources/catalog_remote_data_s
 import 'package:mechanic_mobile/infrastructure/datasources/evidence_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/incident_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/mock_service_data_source.dart';
+import 'package:mechanic_mobile/infrastructure/datasources/provider_assignment_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/provider_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/technician_datasource.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/vehicle_remote_data_source.dart';
@@ -35,6 +40,7 @@ import 'package:mechanic_mobile/infrastructure/repositories/admin_incident_repos
 import 'package:mechanic_mobile/infrastructure/repositories/catalog_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/evidence_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/incident_repository_impl.dart';
+import 'package:mechanic_mobile/infrastructure/repositories/provider_assignment_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/provider_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/service_request_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/technician_repository_impl.dart';
@@ -44,6 +50,7 @@ import 'package:mechanic_mobile/presentation/viewmodels/catalog_services_viewmod
 import 'package:mechanic_mobile/presentation/viewmodels/evidence_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/home_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/incidents_viewmodel.dart';
+import 'package:mechanic_mobile/presentation/viewmodels/provider_available_requests_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/provider_profile_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/technicians_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/vehicle_viewmodel.dart';
@@ -147,6 +154,7 @@ Future<void> init() async {
   initIncidentModule();
   initEvidenceModule();
   initAdminIncidentModule();
+  initProviderAssignmentModule();
 }
 
 void initTechniciansModule() {
@@ -346,6 +354,46 @@ void initAdminIncidentModule() {
       getIncidentDetailsUseCase: sl<GetIncidentDetailsUseCase>(),
       getIncidentCandidatesUseCase: sl<GetIncidentCandidatesUseCase>(),
       publishIncidentUseCase: sl<PublishIncidentUseCase>(),
+    ),
+  );
+}
+
+void initProviderAssignmentModule() {
+  // Data Source
+  sl.registerFactory<ProviderAssignmentRemoteDataSource>(
+    () => ProviderAssignmentRemoteDataSourceImpl(sl<ApiClient>()),
+  );
+
+  // Repository
+  sl.registerFactory<ProviderAssignmentRepository>(
+    () =>
+        ProviderAssignmentRepository(sl<ProviderAssignmentRemoteDataSource>()),
+  );
+
+  // Use Cases
+  sl.registerFactory<GetAvailableCandidatesUseCase>(
+    () => GetAvailableCandidatesUseCaseImpl(sl<ProviderAssignmentRepository>()),
+  );
+
+  sl.registerFactory<GetCandidateDetailsUseCase>(
+    () => GetCandidateDetailsUseCaseImpl(sl<ProviderAssignmentRepository>()),
+  );
+
+  sl.registerFactory<AcceptCandidateUseCase>(
+    () => AcceptCandidateUseCaseImpl(sl<ProviderAssignmentRepository>()),
+  );
+
+  sl.registerFactory<RejectCandidateUseCase>(
+    () => RejectCandidateUseCaseImpl(sl<ProviderAssignmentRepository>()),
+  );
+
+  // ViewModel
+  sl.registerFactory<ProviderAvailableRequestsViewModel>(
+    () => ProviderAvailableRequestsViewModel(
+      getAvailableCandidatesUseCase: sl<GetAvailableCandidatesUseCase>(),
+      getCandidateDetailsUseCase: sl<GetCandidateDetailsUseCase>(),
+      acceptCandidateUseCase: sl<AcceptCandidateUseCase>(),
+      rejectCandidateUseCase: sl<RejectCandidateUseCase>(),
     ),
   );
 }

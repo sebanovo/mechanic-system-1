@@ -7,6 +7,7 @@ import 'package:mechanic_mobile/presentation/pages/catalog_services_page.dart';
 import 'package:mechanic_mobile/presentation/pages/create_incident_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incident_detail_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incidents_page.dart';
+import 'package:mechanic_mobile/presentation/pages/provider_available_requests_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_profile_page.dart';
 import 'package:mechanic_mobile/presentation/pages/technicians_page.dart';
 import '../../domain/entities/service_request.dart';
@@ -79,6 +80,12 @@ final appRouter = GoRouter(
         final id = state.pathParameters['id']!;
         return AdminIncidentDetailPage(incidentId: id);
       },
+    ),
+
+    GoRoute(
+      path: '/provider/available-requests',
+      name: 'provider-available-requests',
+      builder: (context, state) => const ProviderAvailableRequestsPage(),
     ),
     GoRoute(
       path: '/request/:id',

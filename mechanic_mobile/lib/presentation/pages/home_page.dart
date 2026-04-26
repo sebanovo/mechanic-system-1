@@ -269,6 +269,16 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
+                  if (userRole == 'PROVIDER_ADMIN')
+                    _buildDrawerItem(
+                      icon: Icons.list_alt,
+                      title: 'Solicitudes Disponibles',
+                      onTap: () {
+                        context.pop();
+                        context.push('/provider/available-requests');
+                      },
+                    ),
+
                   const Divider(),
 
                   _buildDrawerItem(
