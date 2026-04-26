@@ -462,6 +462,31 @@ class _ProviderOperationDetailPageState
                       ),
                     ),
                   ),
+
+                // ✅ Botón de Tracking (solo cuando está EN_ROUTE y tiene técnico asignado)
+                if (_operation.status == 'EN_ROUTE' &&
+                    _operation.assignedTechnician != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          context.push(
+                            '/provider/tracking/${_operation.incidentId}/${_operation.assignedTechnician!.id}',
+                          );
+                        },
+                        icon: const Icon(Icons.location_on),
+                        label: const Text('Ver Tracking en Vivo'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.blue.shade700,
+                          side: BorderSide(color: Colors.blue.shade700),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                      ),
+                    ),
+                  ),
+
                 const SizedBox(height: 16),
 
                 // Información del incidente

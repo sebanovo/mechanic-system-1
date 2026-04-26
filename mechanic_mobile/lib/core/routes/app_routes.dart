@@ -12,6 +12,7 @@ import 'package:mechanic_mobile/presentation/pages/provider_active_operations_pa
 import 'package:mechanic_mobile/presentation/pages/provider_available_requests_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_operation_detail_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_profile_page.dart';
+import 'package:mechanic_mobile/presentation/pages/provider_tracking_page.dart';
 import 'package:mechanic_mobile/presentation/pages/technicians_page.dart';
 import '../../domain/entities/service_request.dart';
 import '../../presentation/pages/login_page.dart';
@@ -96,6 +97,19 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final operation = state.extra as ProviderOperation?;
         return ProviderOperationDetailPage(operation: operation);
+      },
+    ),
+
+    GoRoute(
+      path: '/provider/tracking/:incidentId/:technicianId',
+      name: 'provider-tracking',
+      builder: (context, state) {
+        final incidentId = state.pathParameters['incidentId']!;
+        final technicianId = state.pathParameters['technicianId']!;
+        return ProviderTrackingPage(
+          incidentId: incidentId,
+          technicianId: technicianId,
+        );
       },
     ),
 
