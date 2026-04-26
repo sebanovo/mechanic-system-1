@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4 # para generar los iconos al hacer build en distintas plataformas
   cupertino_icons: ^1.0.8
   http: ^1.6.0
   flutter_dotenv: ^6.0.0
@@ -19,6 +20,7 @@ dependencies:
   image_picker: ^1.2.1 # (Agregar permisos)
   dio: ^5.9.2 # (El axios de flutter)
   get_it: ^9.2.1 #(Para injection de dependencias)
+  http_parser: ^4.1.2 #(para serializar formatos de image/audio/etc)
 
 dev_dependencies:
   flutter_test:
@@ -29,3 +31,23 @@ flutter:
   uses-material-design: true
   assets:
     - .env
+    - assets/
+
+# Todavía no hay logo
+# flutter_launcher_icons:
+#   image_path: "assets/logo.png" 
+#   android: true
+#   ios: true
+#   remove_alpha_ios: true
+#   web:
+#     generate: true
+#     image_path: "assets/logo.png"
+#   windows:
+#     generate: true
+#     image_path: "assets/logo.png"
+#   macos:
+#     generate: true
+#     image_path: "assets/logo.png"
+#   linux:
+#     generate: true
+#     image_path: "assets/logo.png"

@@ -50,3 +50,28 @@ A new Flutter project.
                 ├── request_detail_page.dart
     └── main.dart
 ```
+
+```bash
+Clean Code Flow
+domain:
+(entities)vehicle 
+|  |
+|  |->(repositories)vehicle_repository "interface"
+|  |
+|--|->(usecases)get_vehicles_usecase
+
+
+infrastructure:
+(models)vehicle
+  |
+  |->(datasources)vehicle_remote_datasource "interface" + "class" -> (class implements inteface)
+  |
+  |->(repositories)vehicle_repository_impl (class implements interface off domain/repositories)
+
+
+presentation:
+(viewmodels)vehicles_viewmodel usa domain/entities y domain/usecases
+  |
+  |->(pages)vehicles_page usa core/di
+
+```
