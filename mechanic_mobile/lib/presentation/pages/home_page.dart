@@ -279,6 +279,16 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
+                  if (userRole == 'PROVIDER_ADMIN')
+                    _buildDrawerItem(
+                      icon: Icons.engineering,
+                      title: 'Operaciones Activas',
+                      onTap: () {
+                        context.pop();
+                        context.push('/provider/active-operations');
+                      },
+                    ),
+
                   const Divider(),
 
                   _buildDrawerItem(

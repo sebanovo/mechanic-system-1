@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:mechanic_mobile/domain/entities/incident.dart';
+import 'package:mechanic_mobile/domain/entities/provider_operation.dart';
 import 'package:mechanic_mobile/presentation/pages/add_evidence_page.dart';
 import 'package:mechanic_mobile/presentation/pages/admin_incident_detail_page.dart';
 import 'package:mechanic_mobile/presentation/pages/admin_incidents_page.dart';
@@ -7,7 +8,9 @@ import 'package:mechanic_mobile/presentation/pages/catalog_services_page.dart';
 import 'package:mechanic_mobile/presentation/pages/create_incident_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incident_detail_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incidents_page.dart';
+import 'package:mechanic_mobile/presentation/pages/provider_active_operations_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_available_requests_page.dart';
+import 'package:mechanic_mobile/presentation/pages/provider_operation_detail_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_profile_page.dart';
 import 'package:mechanic_mobile/presentation/pages/technicians_page.dart';
 import '../../domain/entities/service_request.dart';
@@ -79,6 +82,20 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final id = state.pathParameters['id']!;
         return AdminIncidentDetailPage(incidentId: id);
+      },
+    ),
+
+    GoRoute(
+      path: '/provider/active-operations',
+      name: 'provider-active-operations',
+      builder: (context, state) => const ProviderActiveOperationsPage(),
+    ),
+    GoRoute(
+      path: '/provider/operation/:id',
+      name: 'provider-operation-detail',
+      builder: (context, state) {
+        final operation = state.extra as ProviderOperation?;
+        return ProviderOperationDetailPage(operation: operation);
       },
     ),
 
