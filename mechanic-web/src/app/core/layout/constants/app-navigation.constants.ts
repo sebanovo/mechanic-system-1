@@ -15,6 +15,7 @@ export const APP_NAVIGATION: AppNavigationItem[] = [
 		},
 		allowedRoles: ["PLATFORM_ADMIN", "PROVIDER_ADMIN"],
 	},
+
 	{
 		label: "Mi empresa",
 		route: "/app/empresa/profile",
