@@ -92,15 +92,60 @@
 								<ng-icon name="lucidePencil" class="text-foreground" />
 							</button>
 
+							<!-- menu de acciones -->
 							<button
 								hlmBtn
 								variant="outline"
-								size="sm"
-								class="cursor-pointer"
-								(click)="onAddTechnicias(provider)"
+								size="icon"
+								[hlmDropdownMenuTrigger]="menu"
 							>
-								<ng-icon name="lucideUserPlus" class="text-foreground" />
+								<ng-icon name="lucideMoreVertical" />
 							</button>
+
+							<ng-template #menu>
+								<hlm-dropdown-menu class="w-52">
+									<hlm-dropdown-menu-group>
+										<!-- <button hlmDropdownMenuItem>
+											<ng-icon name="lucideMailCheck" class="text-foreground" />
+											<span>Mark as Read</span>
+										</button> -->
+										<button hlmDropdownMenuItem>
+											<ng-icon name="lucideArchive" class="text-foreground" />
+											<span>Archive</span>
+										</button>
+
+										<button
+											hlmDropdownMenuItem
+											(click)="onAddTechnicias(provider)"
+										>
+											<ng-icon name="lucideUserPlus" class="text-foreground" />
+											<span>Agregar tecnicos</span>
+										</button>
+									</hlm-dropdown-menu-group>
+
+									<hlm-dropdown-menu-separator />
+
+									<hlm-dropdown-menu-group>
+										<button hlmDropdownMenuItem>
+											<ng-icon name="lucideWrench" class="text-foreground" />
+											<span>Servicios</span>
+										</button>
+
+										<button hlmDropdownMenuItem>
+											<ng-icon name="lucidePaperclip" class="text-foreground" />
+											<span>Evidencias</span>
+										</button>
+
+										<button hlmDropdownMenuItem>
+											<ng-icon
+												name="lucideShieldAlert"
+												class="text-foreground"
+											/>
+											<span>Incidentes</span>
+										</button>
+									</hlm-dropdown-menu-group>
+								</hlm-dropdown-menu>
+							</ng-template>
 						</div>
 					</td>
 				</tr>

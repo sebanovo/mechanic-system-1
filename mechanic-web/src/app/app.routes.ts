@@ -53,19 +53,19 @@ export const routes: Routes = [
 		canActivate: [authGuard],
 		component: AppLayout,
 		children: [
-			// {
-			//   path: "", //default route
-			//   redirectTo: "dashboard",
-			//   pathMatch: "full",
-			// },
+			{
+				path: "", //default route
+				redirectTo: "dashboard",
+				pathMatch: "full",
+			},
 
-			// {
-			//   path: "dashboard",
-			//   loadChildren: () =>
-			//     import("./features/dashboard/dashboard.routes").then(
-			//       m => m.DASHBOARD_ROUTES
-			//     ),
-			// },
+			{
+				path: "dashboard",
+				loadChildren: () =>
+					import("./features/dashboard/dashboard.routes").then(
+						m => m.DASHBOARD_ROUTES
+					),
+			},
 			{
 				path: "empresa",
 				loadChildren: () =>
@@ -93,6 +93,21 @@ export const routes: Routes = [
 				path: "users",
 				loadChildren: () =>
 					import("./features/users/users.routes").then(m => m.USERS_ROUTES),
+			},
+
+			{
+				path: "catalogs",
+				loadChildren: () =>
+					import("./features/catalog-services/catalog-service.routes").then(
+						m => m.CATALOG_ROUTES
+					),
+			},
+			{
+				path: "service-me",
+				loadChildren: () =>
+					import("./features/services/service.routes").then(
+						m => m.SERVICE_ROUTES
+					),
 			},
 
 			{

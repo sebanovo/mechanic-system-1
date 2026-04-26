@@ -45,7 +45,10 @@
 			"@shared/ui/empty": ["./src/app/shared/ui/empty/src/index.ts"],
 			"@shared/ui/table": ["./src/app/shared/ui/table/src/index.ts"],
 			"@shared/ui/select": ["./src/app/shared/ui/select/src/index.ts"],
-			"@shared/ui/radio-group": ["./src/app/shared/ui/radio-group/src/index.ts"]
+			"@shared/ui/radio-group": [
+				"./src/app/shared/ui/radio-group/src/index.ts"
+			],
+			"@shared/ui/calendar": ["./src/app/shared/ui/calendar/src/index.ts"]
 		}
 	},
 	"angularCompilerOptions": {
