@@ -1,17 +1,48 @@
 import { Component, inject, input, output } from "@angular/core";
 import { NgIcon, provideIcons } from "@ng-icons/core";
-import { lucideEye, lucidePencil, lucideUserPlus } from "@ng-icons/lucide";
+import {
+	lucideArchive,
+	lucideEllipsis,
+	lucideEye,
+	lucideMailCheck,
+	lucideMoreVertical,
+	lucidePaperclip,
+	lucidePencil,
+	lucideShieldAlert,
+	lucideUserPlus,
+	lucideWrench,
+} from "@ng-icons/lucide";
 
 import { HlmBadgeImports } from "@shared/ui/badge";
 import { HlmButtonImports } from "@shared/ui/button";
 import { HlmTableImports } from "@shared/ui/table";
 
 import { Router } from "@angular/router";
+import { HlmDropdownMenuImports } from "@shared/ui/dropdown-menu";
 import { Provider } from "../../models/provider.types";
 @Component({
 	selector: "app-provider-table",
-	imports: [NgIcon, HlmBadgeImports, HlmButtonImports, HlmTableImports],
-	providers: [provideIcons({ lucideEye, lucidePencil, lucideUserPlus })],
+	imports: [
+		NgIcon,
+		HlmBadgeImports,
+		HlmButtonImports,
+		HlmTableImports,
+		HlmDropdownMenuImports,
+	],
+	providers: [
+		provideIcons({
+			lucideEye,
+			lucidePencil,
+			lucideUserPlus,
+			lucideEllipsis,
+			lucideArchive,
+			lucideMailCheck,
+			lucideMoreVertical,
+			lucideWrench,
+			lucideShieldAlert,
+			lucidePaperclip,
+		}),
+	],
 	host: {
 		style: "display: block",
 	},

@@ -66,18 +66,27 @@ export const APP_NAVIGATION: AppNavigationItem[] = [
 		allowedRoles: ["PLATFORM_ADMIN"],
 	},
 
+	// {
+	// 	type: "section",
+	// 	label: "Catálogo",
+	// },
 	{
-		type: "section",
-		label: "Catálogo",
-	},
-	{
-		label: "Catálogo",
-		route: "/app/catalog",
+		label: "Catálogos",
+		route: "/app/catalogs",
 		icon: {
 			type: "remix",
 			name: "ri-price-tag-3-line",
 		},
-		allowedRoles: ["PROVIDER_ADMIN", "PLATFORM_ADMIN"],
+		allowedRoles: ["PLATFORM_ADMIN"],
+	},
+	{
+		label: "Mis servicios",
+		route: "/app/service-me",
+		icon: {
+			type: "remix",
+			name: "ri-price-tag-3-line",
+		},
+		allowedRoles: ["PROVIDER_ADMIN"],
 	},
 	{
 		label: "Vehículos",
