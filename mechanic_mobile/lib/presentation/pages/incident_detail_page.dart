@@ -193,6 +193,7 @@ class _IncidentDetailPageState extends State<IncidentDetailPage> {
                         size: 10,
                         color: _getStatusColor(_incident.status),
                       ),
+
                       const SizedBox(width: 6),
                       Text(
                         _incident.status,

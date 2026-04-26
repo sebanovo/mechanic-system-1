@@ -38,7 +38,6 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       user = await loginUseCase(email, password);
-      debugPrint('✅ User role: ${user?.roleCodes}');
       return true; // ✅ éxito
     } catch (e) {
       errorMessage = e.toString(); // ✅ capturas error
