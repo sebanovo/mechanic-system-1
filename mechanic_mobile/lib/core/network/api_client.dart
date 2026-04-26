@@ -27,21 +27,13 @@ class ApiClient {
           if (token != null) {
             options.headers["Authorization"] = "Bearer $token";
           }
-          debugPrint('🚀 Request: ${options.method} ${options.path}');
-          debugPrint('📦 Headers: ${options.headers}');
-          if (options.data != null) {
-            debugPrint('📦 Body: ${options.data}');
-          }
+          if (options.data != null) {}
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          debugPrint(
-            '✅ Response: ${response.statusCode} ${response.requestOptions.path}',
-          );
           return handler.next(response);
         },
         onError: (error, handler) {
-          debugPrint('❌ Error: ${error.message}');
           return handler.next(error);
         },
       ),
@@ -96,14 +88,6 @@ class ApiClient {
       contentType: MediaType.parse(mimeType),
     );
     formData.files.add(MapEntry(fieldName, multipartFile));
-
-    // Log para debug
-    debugPrint(
-      '📤 FormData fields: ${formData.fields.map((e) => '${e.key}=${e.value}')}',
-    );
-    debugPrint(
-      '📤 FormData files: ${formData.files.map((e) => '${e.key}: ${e.value.filename}')}',
-    );
 
     return await dio.post(
       path,

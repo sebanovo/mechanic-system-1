@@ -62,9 +62,11 @@ import 'package:mechanic_mobile/infrastructure/repositories/tracking_repository_
 import 'package:mechanic_mobile/infrastructure/repositories/vehicle_repository_impl.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/admin_incidents_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/catalog_services_viewmodel.dart';
+import 'package:mechanic_mobile/presentation/viewmodels/client_tracking_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/evidence_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/home_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/incidents_viewmodel.dart';
+import 'package:mechanic_mobile/presentation/viewmodels/platform_tracking_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/provider_available_requests_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/provider_operation_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/provider_profile_viewmodel.dart';
@@ -155,7 +157,10 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetServiceRequestsUseCase(sl()));
 
   sl.registerLazySingleton(
-    () => HomeViewModel(getServiceRequestsUseCase: sl()),
+    () => HomeViewModel(
+      getServiceRequestsUseCase: sl<GetServiceRequestsUseCase>(),
+      getAllIncidentsUseCase: sl<GetAllIncidentsUseCase>(),
+    ),
   );
   sl.registerLazySingleton(
     () => VehicleViewModel(
@@ -507,5 +512,13 @@ void initTrackingModule() {
       getLiveTrackingUseCase: sl<GetLiveTrackingUseCase>(),
       getTrackingHistoryUseCase: sl<GetTrackingHistoryUseCase>(),
     ),
+  );
+
+  sl.registerFactory<ClientTrackingViewModel>(
+    () => ClientTrackingViewModel(sl<TrackingRemoteDataSource>()),
+  );
+
+  sl.registerFactory<PlatformTrackingViewModel>(
+    () => PlatformTrackingViewModel(sl<TrackingRemoteDataSource>()),
   );
 }

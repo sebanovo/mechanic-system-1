@@ -26,7 +26,17 @@ class _HomePageState extends State<HomePage> {
       _authViewModel.loadMe();
     }
 
-    _viewModel.loadRequests();
+    _loadIncidentsByRole();
+  }
+
+  Future<void> _loadIncidentsByRole() async {
+    final userRole = _getUserRole(_authViewModel.user?.roleCodes);
+
+    if (userRole == 'PLATFORM_ADMIN') {
+      await _viewModel.loadAllIncidents();
+    } else if (userRole == 'CLIENT') {
+      await _viewModel.loadRequests();
+    }
   }
 
   void _showInfoSnackBar(String message, {bool isError = false}) {
@@ -87,15 +97,19 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final userRole = _getUserRole(_authViewModel.user?.roleCodes);
+    final isClient = _hasRole(_authViewModel.user?.roleCodes, 'CLIENT');
+    final isAdmin = _hasRole(_authViewModel.user?.roleCodes, 'PLATFORM_ADMIN');
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mis Solicitudes'),
+        title: Text(isAdmin ? 'Todos los Incidentes' : 'Mis Solicitudes'),
         backgroundColor: Colors.blue.shade800,
         foregroundColor: Colors.white,
         elevation: 2,
         actions: [
           // Solo mostrar vehículos si es CLIENT
-          if (_hasRole(_authViewModel.user?.roleCodes, 'CLIENT'))
+          if (isClient)
             IconButton(
               icon: const Icon(Icons.directions_car),
               onPressed: () {
@@ -117,6 +131,7 @@ class _HomePageState extends State<HomePage> {
           final userRole = _getUserRole(user?.roleCodes);
           final isProvider = _hasRole(user?.roleCodes, 'PROVIDER_ADMIN');
           final isClient = _hasRole(user?.roleCodes, 'CLIENT');
+          final isAdmin = _hasRole(user?.roleCodes, 'PLATFORM_ADMIN');
 
           return Drawer(
             child: Container(
@@ -188,6 +203,7 @@ class _HomePageState extends State<HomePage> {
                     title: 'Inicio',
                     onTap: () {
                       context.pop();
+                      _loadIncidentsByRole();
                     },
                   ),
 
@@ -213,14 +229,6 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
-                  _buildDrawerItem(
-                    icon: Icons.history,
-                    title: 'Historial',
-                    onTap: () {
-                      _showInfoSnackBar('Historial (próximamente)');
-                    },
-                  ),
-
                   if (isProvider)
                     _buildDrawerItem(
                       icon: Icons.business,
@@ -241,14 +249,40 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
-                  _buildDrawerItem(
-                    icon: Icons.support_agent,
-                    title: 'Soporte',
-                    onTap: () {
-                      _showInfoSnackBar('Soporte (próximamente)');
-                    },
-                  ),
+                  // Admin puede ir a la gestión de incidentes
+                  if (isAdmin)
+                    _buildDrawerItem(
+                      icon: Icons.admin_panel_settings,
+                      title: 'Panel de Control',
+                      onTap: () {
+                        context.pop();
+                        context.push('/admin/incidents');
+                      },
+                    ),
 
+                  // Provider: Solicitudes disponibles
+                  if (isProvider)
+                    _buildDrawerItem(
+                      icon: Icons.list_alt,
+                      title: 'Solicitudes Disponibles',
+                      onTap: () {
+                        context.pop();
+                        context.push('/provider/available-requests');
+                      },
+                    ),
+
+                  // Provider: Operaciones activas
+                  if (isProvider)
+                    _buildDrawerItem(
+                      icon: Icons.engineering,
+                      title: 'Operaciones Activas',
+                      onTap: () {
+                        context.pop();
+                        context.push('/provider/active-operations');
+                      },
+                    ),
+
+                  // Cliente: Mis solicitudes (navegar a lista completa)
                   if (isClient)
                     _buildDrawerItem(
                       icon: Icons.list_alt,
@@ -259,35 +293,21 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
-                  if (userRole == 'PLATFORM_ADMIN')
-                    _buildDrawerItem(
-                      icon: Icons.admin_panel_settings,
-                      title: 'Gestionar Incidentes',
-                      onTap: () {
-                        context.pop();
-                        context.push('/admin/incidents');
-                      },
-                    ),
+                  _buildDrawerItem(
+                    icon: Icons.history,
+                    title: 'Historial',
+                    onTap: () {
+                      _showInfoSnackBar('Historial (próximamente)');
+                    },
+                  ),
 
-                  if (userRole == 'PROVIDER_ADMIN')
-                    _buildDrawerItem(
-                      icon: Icons.list_alt,
-                      title: 'Solicitudes Disponibles',
-                      onTap: () {
-                        context.pop();
-                        context.push('/provider/available-requests');
-                      },
-                    ),
-
-                  if (userRole == 'PROVIDER_ADMIN')
-                    _buildDrawerItem(
-                      icon: Icons.engineering,
-                      title: 'Operaciones Activas',
-                      onTap: () {
-                        context.pop();
-                        context.push('/provider/active-operations');
-                      },
-                    ),
+                  _buildDrawerItem(
+                    icon: Icons.support_agent,
+                    title: 'Soporte',
+                    onTap: () {
+                      _showInfoSnackBar('Soporte (próximamente)');
+                    },
+                  ),
 
                   const Divider(),
 
@@ -333,7 +353,7 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: () {
-                      _viewModel.loadRequests();
+                      _loadIncidentsByRole();
                     },
                     icon: const Icon(Icons.refresh),
                     label: const Text('Reintentar'),
@@ -355,7 +375,9 @@ class _HomePageState extends State<HomePage> {
                   Icon(Icons.inbox, size: 64, color: Colors.blue.shade200),
                   const SizedBox(height: 16),
                   Text(
-                    'No hay solicitudes activas',
+                    isAdmin
+                        ? 'No hay incidentes registrados'
+                        : 'No hay solicitudes activas',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey.shade600,
@@ -363,33 +385,39 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'Toca el botón + para solicitar auxilio',
-                    style: TextStyle(color: Colors.grey.shade500),
-                  ),
+                  if (isClient)
+                    Text(
+                      'Toca el botón + para solicitar auxilio',
+                      style: TextStyle(color: Colors.grey.shade500),
+                    ),
+                  if (isAdmin)
+                    Text(
+                      'Los incidentes aparecerán aquí cuando los clientes los creen',
+                      style: TextStyle(color: Colors.grey.shade500),
+                    ),
                 ],
               ),
             );
           }
 
           return RefreshIndicator(
-            onRefresh: () => _viewModel.loadRequests(),
+            onRefresh: () => _loadIncidentsByRole(),
             color: Colors.blue,
             child: ListView.builder(
               padding: const EdgeInsets.all(12),
               itemCount: _viewModel.requests.length,
               itemBuilder: (context, index) {
                 final request = _viewModel.requests[index];
-                return _buildRequestCard(request);
+                return _buildRequestCard(request, isAdmin);
               },
             ),
           );
         },
       ),
-      floatingActionButton: _hasRole(_authViewModel.user?.roleCodes, 'CLIENT')
+      floatingActionButton: isClient
           ? FloatingActionButton.extended(
               onPressed: () {
-                _showInfoSnackBar('Reportar nueva emergencia');
+                context.push('/create-incident');
               },
               icon: const Icon(Icons.add),
               label: const Text('Nueva solicitud'),
@@ -440,8 +468,61 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Widget _buildRequestCard(dynamic request) {
-    final statusConfig = _getStatusConfig(request.status);
+  Widget _buildRequestCard(dynamic request, bool isAdmin) {
+    // ✅ Obtener valores de forma segura (usando try-catch o verificando existencia)
+    final String id = request.id ?? '';
+
+    // ✅ Status - casi siempre existe
+    final String status = request.status ?? 'PENDING';
+
+    // ✅ Priority - puede llamarse 'priority' o 'servicePriority'
+    String priority = 'MEDIUM';
+    try {
+      priority = request.priority ?? request.servicePriority ?? 'MEDIUM';
+    } catch (e) {
+      priority = 'MEDIUM';
+    }
+
+    // ✅ Título - puede ser 'title' o 'description'
+    String title = '';
+    try {
+      title = request.title ?? request.description ?? 'Sin título';
+    } catch (e) {
+      title = request.description ?? 'Sin título';
+    }
+
+    // ✅ Nombre del taller/técnico
+    String assignedTo = 'Buscando taller...';
+    try {
+      if (request.assignedTechnician?.fullName != null) {
+        assignedTo = request.assignedTechnician!.fullName;
+      } else if (request.provider?.businessName != null) {
+        assignedTo = request.provider!.businessName;
+      } else if (request.mechanicName != null &&
+          request.mechanicName.isNotEmpty) {
+        assignedTo = request.mechanicName;
+      }
+    } catch (e) {
+      assignedTo = 'En proceso...';
+    }
+
+    // ✅ Nombre del cliente (para admin)
+    String clientName = '';
+    try {
+      if (request.clientUser?.fullName != null) {
+        clientName = request.clientUser!.fullName;
+      }
+    } catch (e) {
+      clientName = '';
+    }
+
+    final statusConfig = _getStatusConfig(status);
+
+    // Título para admin
+    String displayTitle = title;
+    if (isAdmin && clientName.isNotEmpty) {
+      displayTitle = '$clientName: $title';
+    }
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -455,7 +536,11 @@ class _HomePageState extends State<HomePage> {
       ),
       child: InkWell(
         onTap: () {
-          context.push('/request/${request.id}', extra: request);
+          if (isAdmin) {
+            context.push('/admin/incident/$id');
+          } else {
+            context.push('/incident-detail/$id', extra: request);
+          }
         },
         borderRadius: BorderRadius.circular(16),
         child: Padding(
@@ -483,7 +568,7 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          request.description,
+                          displayTitle,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -502,7 +587,7 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            request.status,
+                            status,
                             style: TextStyle(
                               fontSize: 12,
                               color: statusConfig['color'],
@@ -525,15 +610,63 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey.shade500,
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    request.mechanicName.isNotEmpty
-                        ? request.mechanicName
-                        : 'Buscando mecánico...',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  Expanded(
+                    child: Text(
+                      assignedTo,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 8),
+                  if (priority != 'MEDIUM')
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: priority == 'HIGH' || priority == 'URGENT'
+                            ? Colors.red.shade100
+                            : Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        priority,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: priority == 'HIGH' || priority == 'URGENT'
+                              ? Colors.red.shade700
+                              : Colors.grey.shade600,
+                        ),
+                      ),
+                    ),
                 ],
               ),
+              if (isAdmin && request.provider != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(Icons.business, size: 14, color: Colors.grey.shade500),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        request.provider!.businessName,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey.shade500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),
@@ -545,12 +678,14 @@ class _HomePageState extends State<HomePage> {
     switch (status.toUpperCase()) {
       case 'PENDING':
         return {'color': Colors.orange, 'icon': Icons.pending_actions};
+      case 'PUBLISHED':
+        return {'color': Colors.blue, 'icon': Icons.publish};
       case 'ASSIGNED':
-        return {'color': Colors.blue, 'icon': Icons.person_pin_circle};
+        return {'color': Colors.purple, 'icon': Icons.person_pin_circle};
       case 'EN_ROUTE':
         return {'color': Colors.cyan, 'icon': Icons.directions_car};
       case 'ON_SITE':
-        return {'color': Colors.purple, 'icon': Icons.location_on};
+        return {'color': Colors.teal, 'icon': Icons.location_on};
       case 'IN_PROGRESS':
         return {'color': Colors.indigo, 'icon': Icons.build};
       case 'COMPLETED':

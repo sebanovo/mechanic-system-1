@@ -5,9 +5,11 @@ import 'package:mechanic_mobile/presentation/pages/add_evidence_page.dart';
 import 'package:mechanic_mobile/presentation/pages/admin_incident_detail_page.dart';
 import 'package:mechanic_mobile/presentation/pages/admin_incidents_page.dart';
 import 'package:mechanic_mobile/presentation/pages/catalog_services_page.dart';
+import 'package:mechanic_mobile/presentation/pages/client_tracking_page.dart';
 import 'package:mechanic_mobile/presentation/pages/create_incident_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incident_detail_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incidents_page.dart';
+import 'package:mechanic_mobile/presentation/pages/platform_tracking_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_active_operations_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_available_requests_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_operation_detail_page.dart';
@@ -110,6 +112,23 @@ final appRouter = GoRouter(
           incidentId: incidentId,
           technicianId: technicianId,
         );
+      },
+    ),
+
+    GoRoute(
+      path: '/client/tracking/:incidentId',
+      name: 'client-tracking',
+      builder: (context, state) {
+        final incidentId = state.pathParameters['incidentId']!;
+        return ClientTrackingPage(incidentId: incidentId);
+      },
+    ),
+    GoRoute(
+      path: '/platform/tracking/:incidentId',
+      name: 'platform-tracking',
+      builder: (context, state) {
+        final incidentId = state.pathParameters['incidentId']!;
+        return PlatformTrackingPage(incidentId: incidentId);
       },
     ),
 
