@@ -294,6 +294,15 @@ class _HomePageState extends State<HomePage> {
                     ),
 
                   _buildDrawerItem(
+                    icon: Icons.notifications,
+                    title: 'Mis Dispositivos',
+                    onTap: () {
+                      context.pop();
+                      context.push('/devices');
+                    },
+                  ),
+
+                  _buildDrawerItem(
                     icon: Icons.history,
                     title: 'Historial',
                     onTap: () {

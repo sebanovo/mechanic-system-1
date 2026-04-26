@@ -7,6 +7,7 @@ import 'package:mechanic_mobile/presentation/pages/admin_incidents_page.dart';
 import 'package:mechanic_mobile/presentation/pages/catalog_services_page.dart';
 import 'package:mechanic_mobile/presentation/pages/client_tracking_page.dart';
 import 'package:mechanic_mobile/presentation/pages/create_incident_page.dart';
+import 'package:mechanic_mobile/presentation/pages/devices_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incident_detail_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incidents_page.dart';
 import 'package:mechanic_mobile/presentation/pages/platform_tracking_page.dart';
@@ -136,6 +137,12 @@ final appRouter = GoRouter(
       path: '/provider/available-requests',
       name: 'provider-available-requests',
       builder: (context, state) => const ProviderAvailableRequestsPage(),
+    ),
+
+    GoRoute(
+      path: '/devices',
+      name: 'devices',
+      builder: (context, state) => const DevicesPage(),
     ),
     GoRoute(
       path: '/request/:id',

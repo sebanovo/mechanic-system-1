@@ -20,6 +20,7 @@ import 'package:mechanic_mobile/domain/usecases/get_catalog_services_usecase.dar
 import 'package:mechanic_mobile/domain/usecases/get_incident_candidates_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_incident_details_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_live_tracking_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/get_my_devices_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_my_incidents_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_operation_state_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_provider_profile_usecase.dart';
@@ -32,9 +33,11 @@ import 'package:mechanic_mobile/domain/usecases/get_vehicle_by_id_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/mark_arrived_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/publish_incident_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/refresh_route_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/register_device_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/reject_candidate_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/report_location_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/start_service_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/unregister_device_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/update_incident_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/update_provider_profile_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/update_technician_usecase.dart';
@@ -43,6 +46,7 @@ import 'package:mechanic_mobile/infrastructure/datasources/catalog_remote_data_s
 import 'package:mechanic_mobile/infrastructure/datasources/evidence_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/incident_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/mock_service_data_source.dart';
+import 'package:mechanic_mobile/infrastructure/datasources/notification_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/provider_assignment_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/provider_operation_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/provider_remote_data_source.dart';
@@ -53,6 +57,7 @@ import 'package:mechanic_mobile/infrastructure/repositories/admin_incident_repos
 import 'package:mechanic_mobile/infrastructure/repositories/catalog_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/evidence_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/incident_repository_impl.dart';
+import 'package:mechanic_mobile/infrastructure/repositories/notification_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/provider_assignment_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/provider_operation_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/provider_repository_impl.dart';
@@ -60,6 +65,7 @@ import 'package:mechanic_mobile/infrastructure/repositories/service_request_repo
 import 'package:mechanic_mobile/infrastructure/repositories/technician_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/tracking_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/vehicle_repository_impl.dart';
+import 'package:mechanic_mobile/presentation/services/notification_service.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/admin_incidents_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/catalog_services_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/client_tracking_viewmodel.dart';
@@ -179,6 +185,7 @@ Future<void> init() async {
   initProviderAssignmentModule();
   initProviderOperationModule();
   initTrackingModule();
+  initNotificationModule();
 }
 
 void initTechniciansModule() {
@@ -521,4 +528,33 @@ void initTrackingModule() {
   sl.registerFactory<PlatformTrackingViewModel>(
     () => PlatformTrackingViewModel(sl<TrackingRemoteDataSource>()),
   );
+}
+
+// Agregar módulo
+void initNotificationModule() {
+  // Data Source
+  sl.registerFactory<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSourceImpl(sl<ApiClient>()),
+  );
+
+  // Repository
+  sl.registerFactory<NotificationRepository>(
+    () => NotificationRepository(sl<NotificationRemoteDataSource>()),
+  );
+
+  // Use Cases
+  sl.registerFactory<RegisterDeviceUseCase>(
+    () => RegisterDeviceUseCaseImpl(sl<NotificationRepository>()),
+  );
+
+  sl.registerFactory<UnregisterDeviceUseCase>(
+    () => UnregisterDeviceUseCaseImpl(sl<NotificationRepository>()),
+  );
+
+  sl.registerFactory<GetMyDevicesUseCase>(
+    () => GetMyDevicesUseCaseImpl(sl<NotificationRepository>()),
+  );
+
+  // Service - Singleton
+  sl.registerLazySingleton<NotificationService>(() => NotificationService());
 }
