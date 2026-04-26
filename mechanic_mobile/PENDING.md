@@ -1,0 +1,3 @@
+- implementar el add evidences para imagenes y audio
+- implementar el geolocator de incidents para obtener la latitud y longitud
+- implementar las notificaciones push en el cliente

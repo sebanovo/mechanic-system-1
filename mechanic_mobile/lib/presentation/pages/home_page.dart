@@ -249,6 +249,16 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
 
+                  if (isClient)
+                    _buildDrawerItem(
+                      icon: Icons.list_alt,
+                      title: 'Mis Solicitudes',
+                      onTap: () {
+                        context.pop();
+                        context.push('/incidents');
+                      },
+                    ),
+
                   const Divider(),
 
                   _buildDrawerItem(

@@ -1,5 +1,10 @@
 import 'package:go_router/go_router.dart';
+import 'package:mechanic_mobile/domain/entities/incident.dart';
+import 'package:mechanic_mobile/presentation/pages/add_evidence_page.dart';
 import 'package:mechanic_mobile/presentation/pages/catalog_services_page.dart';
+import 'package:mechanic_mobile/presentation/pages/create_incident_page.dart';
+import 'package:mechanic_mobile/presentation/pages/incident_detail_page.dart';
+import 'package:mechanic_mobile/presentation/pages/incidents_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_profile_page.dart';
 import 'package:mechanic_mobile/presentation/pages/technicians_page.dart';
 import '../../domain/entities/service_request.dart';
@@ -33,6 +38,32 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/catalog-services',
       builder: (context, state) => const CatalogServicesPage(),
+    ),
+    GoRoute(
+      path: '/incidents',
+      name: 'incidents',
+      builder: (context, state) => const IncidentsPage(),
+    ),
+    GoRoute(
+      path: '/create-incident',
+      name: 'create-incident',
+      builder: (context, state) => const CreateIncidentPage(),
+    ),
+    GoRoute(
+      path: '/incident-detail/:id',
+      name: 'incident-detail',
+      builder: (context, state) {
+        final incident = state.extra as Incident?;
+        return IncidentDetailPage(incident: incident);
+      },
+    ),
+    GoRoute(
+      path: '/add-evidence/:incidentId',
+      name: 'add-evidence',
+      builder: (context, state) {
+        final incidentId = state.pathParameters['incidentId']!;
+        return AddEvidencePage(incidentId: incidentId);
+      },
     ),
     GoRoute(
       path: '/request/:id',
