@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mechanic_mobile/core/di/injection_container.dart';
+import 'package:mechanic_mobile/domain/entities/technician.dart';
 import '../viewmodels/technicians_viewmodel.dart';
 
 class TechniciansPage extends StatefulWidget {
@@ -197,6 +198,132 @@ class _TechniciansPageState extends State<TechniciansPage> {
     );
   }
 
+  // Agrega este método para editar técnico
+  void _showEditTechnicianDialog(Technician technician) {
+    final formKey = GlobalKey<FormState>();
+    final firstNameController = TextEditingController(
+      text: technician.firstName,
+    );
+    final lastNameController = TextEditingController(text: technician.lastName);
+    final phoneController = TextEditingController(text: technician.phoneNumber);
+    final specialtyController = TextEditingController(
+      text: technician.specialty,
+    );
+    bool isAvailable = technician.isAvailable;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.edit, color: Colors.blue.shade800),
+            const SizedBox(width: 8),
+            const Text('Editar Técnico'),
+          ],
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: SingleChildScrollView(
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: firstNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nombre *',
+                    prefixIcon: Icon(Icons.person_outline),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Campo requerido' : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: lastNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Apellido *',
+                    prefixIcon: Icon(Icons.person_outline),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Campo requerido' : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                    labelText: 'Teléfono *',
+                    prefixIcon: Icon(Icons.phone_outlined),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Campo requerido' : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: specialtyController,
+                  decoration: const InputDecoration(
+                    labelText: 'Especialidad *',
+                    hintText: 'Ej: Auxilio eléctrico, Llantas, Motor',
+                    prefixIcon: Icon(Icons.build),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Campo requerido' : null,
+                ),
+                const SizedBox(height: 12),
+                SwitchListTile(
+                  title: const Text('Disponible'),
+                  value: isAvailable,
+                  onChanged: (value) => isAvailable = value,
+                  activeColor: Colors.blue.shade700,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(context);
+                final success = await _viewModel.updateTechnician(
+                  technicianId: technician.id,
+                  firstName: firstNameController.text.trim(),
+                  lastName: lastNameController.text.trim(),
+                  phoneNumber: phoneController.text.trim(),
+                  specialty: specialtyController.text.trim(),
+                  isAvailable: isAvailable,
+                );
+                if (success) {
+                  _showSnackBar('Técnico actualizado exitosamente');
+                } else {
+                  _showSnackBar(
+                    _viewModel.errorMessage ?? 'Error al actualizar técnico',
+                    isError: true,
+                  );
+                }
+                _viewModel.clearError();
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue.shade800,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Actualizar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -331,27 +458,43 @@ class _TechniciansPageState extends State<TechniciansPage> {
                           ),
                       ],
                     ),
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: tech.isAvailable
-                            ? Colors.green.shade100
-                            : Colors.red.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        tech.isAvailable ? 'Disponible' : 'Ocupado',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: tech.isAvailable
-                              ? Colors.green.shade700
-                              : Colors.red.shade700,
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // ✅ Botón de editar
+                        IconButton(
+                          icon: Icon(
+                            Icons.edit,
+                            color: Colors.blue.shade700,
+                            size: 20,
+                          ),
+                          onPressed: () => _showEditTechnicianDialog(tech),
+                          tooltip: 'Editar técnico',
                         ),
-                      ),
+                        // Indicador de disponibilidad
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: tech.isAvailable
+                                ? Colors.green.shade100
+                                : Colors.red.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            tech.isAvailable ? 'Disponible' : 'Ocupado',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: tech.isAvailable
+                                  ? Colors.green.shade700
+                                  : Colors.red.shade700,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     isThreeLine:
                         tech.currentLatitude != null ||

@@ -1,7 +1,8 @@
+import 'package:mechanic_mobile/domain/usecases/get_technicians_usecase.dart';
+import 'package:mechanic_mobile/infrastructure/datasources/technician_datasource.dart';
 import '../../domain/entities/technician.dart';
 import '../../domain/usecases/create_technician_usecase.dart';
-import '../../domain/usecases/get_technicians_usecase.dart';
-import '../datasources/technician_datasource.dart';
+import '../../domain/usecases/update_technician_usecase.dart';
 
 class TechnicianRepository {
   final TechnicianRemoteDataSource _dataSource;
@@ -17,9 +18,20 @@ class TechnicianRepository {
     final models = await _dataSource.getTechnicians();
     return models.map((model) => model.toEntity()).toList();
   }
+
+  Future<Technician> updateTechnician(
+    String technicianId,
+    UpdateTechnicianParams params,
+  ) async {
+    final model = await _dataSource.updateTechnician(
+      technicianId,
+      params.toJson(),
+    );
+    return model.toEntity();
+  }
 }
 
-// Implementación del UseCase que usa el repositorio
+// Implementación del UseCase para crear
 class CreateTechnicianUseCaseImpl implements CreateTechnicianUseCase {
   final TechnicianRepository _repository;
 
@@ -31,7 +43,7 @@ class CreateTechnicianUseCaseImpl implements CreateTechnicianUseCase {
   }
 }
 
-// Implementación del UseCase que usa el repositorio
+// Implementación del UseCase para listar
 class GetTechniciansUseCaseImpl implements GetTechniciansUseCase {
   final TechnicianRepository _repository;
 
@@ -40,5 +52,20 @@ class GetTechniciansUseCaseImpl implements GetTechniciansUseCase {
   @override
   Future<List<Technician>> execute() async {
     return await _repository.getTechnicians();
+  }
+}
+
+// ✅ Nueva implementación del UseCase para actualizar
+class UpdateTechnicianUseCaseImpl implements UpdateTechnicianUseCase {
+  final TechnicianRepository _repository;
+
+  UpdateTechnicianUseCaseImpl(this._repository);
+
+  @override
+  Future<Technician> execute(
+    String technicianId,
+    UpdateTechnicianParams params,
+  ) async {
+    return await _repository.updateTechnician(technicianId, params);
   }
 }

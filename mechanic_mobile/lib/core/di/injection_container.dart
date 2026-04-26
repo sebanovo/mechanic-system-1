@@ -7,6 +7,7 @@ import 'package:mechanic_mobile/domain/usecases/get_service_requests_usecase.dar
 import 'package:mechanic_mobile/domain/usecases/get_my_vehicles_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_technicians_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_vehicle_by_id_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/update_technician_usecase.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/mock_service_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/technician_datasource.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/vehicle_remote_data_source.dart';
@@ -130,10 +131,15 @@ void initTechnicians() {
     () => GetTechniciansUseCaseImpl(sl<TechnicianRepository>()),
   );
 
+  sl.registerFactory<UpdateTechnicianUseCase>(
+    () => UpdateTechnicianUseCaseImpl(sl<TechnicianRepository>()),
+  );
+
   sl.registerFactory<TechniciansViewModel>(
     () => TechniciansViewModel(
-      createTechnicianUseCase: sl(),
-      getTechniciansUseCase: sl(),
+      createTechnicianUseCase: sl<CreateTechnicianUseCase>(),
+      getTechniciansUseCase: sl<GetTechniciansUseCase>(),
+      updateTechnicianUseCase: sl<UpdateTechnicianUseCase>(),
     ),
   );
 }

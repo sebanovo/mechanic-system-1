@@ -4,6 +4,10 @@ import '../models/technician_model.dart';
 abstract class TechnicianRemoteDataSource {
   Future<List<TechnicianModel>> getTechnicians();
   Future<TechnicianModel> createTechnician(Map<String, dynamic> params);
+  Future<TechnicianModel> updateTechnician(
+    String technicianId,
+    Map<String, dynamic> params,
+  );
 }
 
 class TechnicianRemoteDataSourceImpl implements TechnicianRemoteDataSource {
@@ -40,5 +44,24 @@ class TechnicianRemoteDataSourceImpl implements TechnicianRemoteDataSource {
       return TechnicianModel.fromJson(jsonResponse['data']);
     }
     throw Exception(jsonResponse['message'] ?? 'Failed to create technician');
+  }
+
+  @override
+  Future<TechnicianModel> updateTechnician(
+    String technicianId,
+    Map<String, dynamic> params,
+  ) async {
+    final response = await _apiClient.patch(
+      '/api/providers/me/technicians/$technicianId',
+      params,
+    );
+
+    final Map<String, dynamic> jsonResponse =
+        response.data as Map<String, dynamic>;
+
+    if (jsonResponse['success'] == true) {
+      return TechnicianModel.fromJson(jsonResponse['data']);
+    }
+    throw Exception(jsonResponse['message'] ?? 'Failed to update technician');
   }
 }
