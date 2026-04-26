@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+import 'package:mechanic_mobile/presentation/pages/catalog_services_page.dart';
+import 'package:mechanic_mobile/presentation/pages/provider_profile_page.dart';
 import 'package:mechanic_mobile/presentation/pages/technicians_page.dart';
 import '../../domain/entities/service_request.dart';
 import '../../presentation/pages/login_page.dart';
@@ -23,6 +25,14 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/technicians',
       builder: (context, state) => const TechniciansPage(),
+    ),
+    GoRoute(
+      path: '/provider-profile',
+      builder: (context, state) => const ProviderProfilePage(),
+    ),
+    GoRoute(
+      path: '/catalog-services',
+      builder: (context, state) => const CatalogServicesPage(),
     ),
     GoRoute(
       path: '/request/:id',

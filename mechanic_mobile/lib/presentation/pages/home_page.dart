@@ -221,13 +221,25 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
 
-                  _buildDrawerItem(
-                    icon: Icons.person,
-                    title: 'Mi perfil',
-                    onTap: () {
-                      _showInfoSnackBar('Perfil (próximamente)');
-                    },
-                  ),
+                  if (isProvider)
+                    _buildDrawerItem(
+                      icon: Icons.business,
+                      title: 'Mi Taller',
+                      onTap: () {
+                        context.pop();
+                        context.push('/provider-profile');
+                      },
+                    ),
+
+                  if (isProvider)
+                    _buildDrawerItem(
+                      icon: Icons.miscellaneous_services,
+                      title: 'Servicios',
+                      onTap: () {
+                        context.pop();
+                        context.push('/catalog-services');
+                      },
+                    ),
 
                   _buildDrawerItem(
                     icon: Icons.support_agent,
