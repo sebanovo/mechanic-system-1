@@ -8,7 +8,10 @@ import 'package:mechanic_mobile/domain/usecases/create_incident_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/create_provider_service_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/create_technician_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/create_vehicle_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/get_all_incidents_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_catalog_services_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/get_incident_candidates_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/get_incident_details_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_my_incidents_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_provider_profile_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_provider_services_usecase.dart';
@@ -16,9 +19,11 @@ import 'package:mechanic_mobile/domain/usecases/get_service_requests_usecase.dar
 import 'package:mechanic_mobile/domain/usecases/get_my_vehicles_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_technicians_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/get_vehicle_by_id_usecase.dart';
+import 'package:mechanic_mobile/domain/usecases/publish_incident_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/update_incident_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/update_provider_profile_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/update_technician_usecase.dart';
+import 'package:mechanic_mobile/infrastructure/datasources/admin_incident_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/catalog_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/evidence_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/incident_remote_data_source.dart';
@@ -26,6 +31,7 @@ import 'package:mechanic_mobile/infrastructure/datasources/mock_service_data_sou
 import 'package:mechanic_mobile/infrastructure/datasources/provider_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/technician_datasource.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/vehicle_remote_data_source.dart';
+import 'package:mechanic_mobile/infrastructure/repositories/admin_incident_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/catalog_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/evidence_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/incident_repository_impl.dart';
@@ -33,6 +39,7 @@ import 'package:mechanic_mobile/infrastructure/repositories/provider_repository_
 import 'package:mechanic_mobile/infrastructure/repositories/service_request_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/technician_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/vehicle_repository_impl.dart';
+import 'package:mechanic_mobile/presentation/viewmodels/admin_incidents_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/catalog_services_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/evidence_viewmodel.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/home_viewmodel.dart';
@@ -139,6 +146,7 @@ Future<void> init() async {
   initCatalogModule();
   initIncidentModule();
   initEvidenceModule();
+  initAdminIncidentModule();
 }
 
 void initTechniciansModule() {
@@ -299,6 +307,45 @@ void initEvidenceModule() {
     () => EvidenceViewModel(
       addTextEvidenceUseCase: sl<AddTextEvidenceUseCase>(),
       addFileEvidenceUseCase: sl<AddFileEvidenceUseCase>(),
+    ),
+  );
+}
+
+void initAdminIncidentModule() {
+  // Data Source
+  sl.registerFactory<AdminIncidentRemoteDataSource>(
+    () => AdminIncidentRemoteDataSourceImpl(sl<ApiClient>()),
+  );
+
+  // Repository
+  sl.registerFactory<AdminIncidentRepository>(
+    () => AdminIncidentRepository(sl<AdminIncidentRemoteDataSource>()),
+  );
+
+  // Use Cases
+  sl.registerFactory<GetAllIncidentsUseCase>(
+    () => GetAllIncidentsUseCaseImpl(sl<AdminIncidentRepository>()),
+  );
+
+  sl.registerFactory<GetIncidentDetailsUseCase>(
+    () => GetIncidentDetailsUseCaseImpl(sl<AdminIncidentRepository>()),
+  );
+
+  sl.registerFactory<GetIncidentCandidatesUseCase>(
+    () => GetIncidentCandidatesUseCaseImpl(sl<AdminIncidentRepository>()),
+  );
+
+  sl.registerFactory<PublishIncidentUseCase>(
+    () => PublishIncidentUseCaseImpl(sl<AdminIncidentRepository>()),
+  );
+
+  // ViewModel
+  sl.registerFactory<AdminIncidentsViewModel>(
+    () => AdminIncidentsViewModel(
+      getAllIncidentsUseCase: sl<GetAllIncidentsUseCase>(),
+      getIncidentDetailsUseCase: sl<GetIncidentDetailsUseCase>(),
+      getIncidentCandidatesUseCase: sl<GetIncidentCandidatesUseCase>(),
+      publishIncidentUseCase: sl<PublishIncidentUseCase>(),
     ),
   );
 }

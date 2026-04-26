@@ -259,6 +259,16 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
+                  if (userRole == 'PLATFORM_ADMIN')
+                    _buildDrawerItem(
+                      icon: Icons.admin_panel_settings,
+                      title: 'Gestionar Incidentes',
+                      onTap: () {
+                        context.pop();
+                        context.push('/admin/incidents');
+                      },
+                    ),
+
                   const Divider(),
 
                   _buildDrawerItem(

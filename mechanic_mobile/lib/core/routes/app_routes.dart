@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:mechanic_mobile/domain/entities/incident.dart';
 import 'package:mechanic_mobile/presentation/pages/add_evidence_page.dart';
+import 'package:mechanic_mobile/presentation/pages/admin_incident_detail_page.dart';
+import 'package:mechanic_mobile/presentation/pages/admin_incidents_page.dart';
 import 'package:mechanic_mobile/presentation/pages/catalog_services_page.dart';
 import 'package:mechanic_mobile/presentation/pages/create_incident_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incident_detail_page.dart';
@@ -63,6 +65,19 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final incidentId = state.pathParameters['incidentId']!;
         return AddEvidencePage(incidentId: incidentId);
+      },
+    ),
+    GoRoute(
+      path: '/admin/incidents',
+      name: 'admin-incidents',
+      builder: (context, state) => const AdminIncidentsPage(),
+    ),
+    GoRoute(
+      path: '/admin/incident/:id',
+      name: 'admin-incident-detail',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return AdminIncidentDetailPage(incidentId: id);
       },
     ),
     GoRoute(
