@@ -69,4 +69,9 @@ export class ProviderTable {
 		console.log("go to technicians click");
 		this.router.navigate(["/app/providers", provider.id, "technicians"]);
 	}
+
+	onListarServicios(provider: Provider): void {
+		console.log("go to technicians click");
+		this.router.navigate(["/app/providers", provider.id, "services"]);
+	}
 }
