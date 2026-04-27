@@ -3,7 +3,7 @@
 Esta guía muestra cómo construir y subir imágenes a Docker Hub usando variables genéricas:
 
 * `TU_USUARIO`
-* `VERSION`
+* `1.0.0`
 
 ---
 
@@ -21,7 +21,7 @@ docker login
 
 ```bash
 docker build \
-  -t TU_USUARIO/mechanic-flutter-web:VERSION \
+  -t TU_USUARIO/mechanic-flutter-web:1.0.0 \
   -f mechanic_mobile/Dockerfile.prod \
   ./mechanic_mobile
 ```
@@ -29,7 +29,7 @@ docker build \
 ## 🚀 Push
 
 ```bash
-docker push TU_USUARIO/mechanic-flutter-web:VERSION
+docker push TU_USUARIO/mechanic-flutter-web:1.0.0
 ```
 
 ---
@@ -40,7 +40,7 @@ docker push TU_USUARIO/mechanic-flutter-web:VERSION
 
 ```bash
 docker build \
-  -t TU_USUARIO/mechanic-web:VERSION \
+  -t TU_USUARIO/mechanic-web:1.0.0 \
   -f mechanic-web/Dockerfile.prod \
   ./mechanic-web
 ```
@@ -48,7 +48,7 @@ docker build \
 ## 🚀 Push
 
 ```bash
-docker push TU_USUARIO/mechanic-web:VERSION
+docker push TU_USUARIO/mechanic-web:1.0.0
 ```
 
 ---
@@ -59,7 +59,7 @@ docker push TU_USUARIO/mechanic-web:VERSION
 
 ```bash
 docker build \
-  -t TU_USUARIO/mechanic-api:VERSION \
+  -t TU_USUARIO/mechanic-api:1.0.0 \
   -f mechanic-api/Dockerfile.prod \
   ./mechanic-api
 ```
@@ -67,7 +67,7 @@ docker build \
 ## 🚀 Push
 
 ```bash
-docker push TU_USUARIO/mechanic-api:VERSION
+docker push TU_USUARIO/mechanic-api:1.0.0
 ```
 
 ---
@@ -81,9 +81,9 @@ docker images
 Deberías ver:
 
 ```
-TU_USUARIO/mechanic-flutter-web   VERSION
-TU_USUARIO/mechanic-web           VERSION
-TU_USUARIO/mechanic-api           VERSION
+TU_USUARIO/mechanic-flutter-web   1.0.0
+TU_USUARIO/mechanic-web           1.0.0
+TU_USUARIO/mechanic-api           1.0.0
 ```
 
 ---
@@ -93,13 +93,13 @@ TU_USUARIO/mechanic-api           VERSION
 ```yaml
 services:
   serv-mechanic-api:
-    image: TU_USUARIO/mechanic-api:VERSION
+    image: TU_USUARIO/mechanic-api:1.0.0
 
   serv-mechanic-web:
-    image: TU_USUARIO/mechanic-web:VERSION
+    image: TU_USUARIO/mechanic-web:1.0.0
 
   serv-mechanic-flutter-web:
-    image: TU_USUARIO/mechanic-flutter-web:VERSION
+    image: TU_USUARIO/mechanic-flutter-web:1.0.0
 ```
 
 ---
@@ -124,8 +124,8 @@ docker compose up -d
 # 🧾 Resumen rápido
 
 ```bash
-docker build -t TU_USUARIO/servicio:VERSION -f ruta/Dockerfile.prod ./ruta
-docker push TU_USUARIO/servicio:VERSION
+docker build -t TU_USUARIO/servicio:1.0.0 -f ruta/Dockerfile.prod ./ruta
+docker push TU_USUARIO/servicio:1.0.0
 ```
 
 ---
@@ -133,8 +133,23 @@ docker push TU_USUARIO/servicio:VERSION
 # 🎯 Ejemplo real
 
 ```bash
-docker build -t sebastiandevjs/mechanic-api:1.0.0 -f finance-api/Dockerfile.prod ./finance-api
+docker build -t sebastiandevjs/mechanic-api:1.0.0 -f mechacnic-api/Dockerfile.prod ./mechacnic-api
 docker push sebastiandevjs/mechanic-api:1.0.0
 ```
 
+
+# 1. Build de todas las imágenes
+docker build -t sebastiandevjs/mech-api:1.0.0       ./mechanic-api    -f ./mechanic-api/Dockerfile.prod
+docker build -t sebastiandevjs/mech-worker:1.0.0    ./mechanic-api    -f ./mechanic-api/Dockerfile.prod
+docker build -t sebastiandevjs/mech-web:1.0.0       ./mechanic-web    -f ./mechanic-web/Dockerfile.prod
+docker build -t sebastiandevjs/mech-flutter-web:1.0.0 ./mechanic_mobile -f ./mechanic_mobile/Dockerfile.prod
+
+# 2. Login en Docker Hub
+docker login
+
+# 3. Push de todas las imágenes
+docker push sebastiandevjs/mech-api:1.0.0
+docker push sebastiandevjs/mech-worker:1.0.0
+docker push sebastiandevjs/mech-web:1.0.0
+docker push sebastiandevjs/mech-flutter-web:1.0.0
 ---
