@@ -1,33 +1,62 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/service_request.dart';
+import 'package:mechanic_mobile/domain/usecases/get_all_incidents_usecase.dart';
 import '../../domain/usecases/get_service_requests_usecase.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final GetServiceRequestsUseCase getServiceRequestsUseCase;
+  final GetAllIncidentsUseCase getAllIncidentsUseCase;
 
-  List<ServiceRequest> _requests = [];
+  List<dynamic> _requests = []; // ✅ Cambiar a dynamic para aceptar ambos tipos
   bool _isLoading = false;
   String? _errorMessage;
 
-  HomeViewModel({required this.getServiceRequestsUseCase});
+  HomeViewModel({
+    required this.getServiceRequestsUseCase,
+    required this.getAllIncidentsUseCase,
+  });
 
-  List<ServiceRequest> get requests => _requests;
+  List<dynamic> get requests => _requests;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
   Future<void> loadRequests() async {
-    _isLoading = true;
+    _setLoading(true);
     _errorMessage = null;
-    notifyListeners();
 
     try {
       _requests = await getServiceRequestsUseCase.call();
-      _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _errorMessage = 'Error al cargar las solicitudes';
-      _isLoading = false;
+      _errorMessage = 'Error al cargar las solicitudes: ${e.toString()}';
       notifyListeners();
+    } finally {
+      _setLoading(false);
     }
+  }
+
+  // ✅ Método para admin - carga todos los incidentes
+  Future<void> loadAllIncidents() async {
+    _setLoading(true);
+    _errorMessage = null;
+
+    try {
+      _requests = await getAllIncidentsUseCase.execute();
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Error al cargar incidentes: ${e.toString()}';
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
   }
 }

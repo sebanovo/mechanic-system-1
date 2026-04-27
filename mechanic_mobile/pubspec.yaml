@@ -20,7 +20,9 @@ dependencies:
   image_picker: ^1.2.1 # (Agregar permisos)
   dio: ^5.9.2 # (El axios de flutter)
   get_it: ^9.2.1 #(Para injection de dependencias)
-  http_parser: ^4.1.2 #(para serializar formatos de image/audio/etc)
+  http_parser: ^4.1.2 #(Para serializar formatos de image/audio/etc)
+  firebase_core: ^4.7.0
+  firebase_messaging: ^16.2.0 #(Para notificaciones push)
 
 dev_dependencies:
   flutter_test:

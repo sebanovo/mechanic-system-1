@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:image_picker/image_picker.dart';
 import 'package:mechanic_mobile/core/network/api_client.dart';
 
@@ -61,17 +58,11 @@ class EvidenceRemoteDataSourceImpl implements EvidenceRemoteDataSource {
           ? (extension == 'png' ? 'image/png' : 'image/jpeg')
           : 'audio/mpeg';
 
-      debugPrint('📤 Subiendo archivo: $fileName');
-      debugPrint('📤 Tipo MIME: $mimeType');
-      debugPrint('📤 Tamaño: ${bytes.length} bytes');
-
       // ✅ Asegurar que los campos son correctos
       final additionalFields = {
         'evidence_type': evidenceType, // Debe ser "IMAGE", "TEXT" o "AUDIO"
         'description': description,
       };
-
-      debugPrint('📤 Campos adicionales: $additionalFields');
 
       final response = await _apiClient.uploadFile(
         '/api/evidences/client/incidents/$incidentId/files',
@@ -84,18 +75,13 @@ class EvidenceRemoteDataSourceImpl implements EvidenceRemoteDataSource {
 
       final Map<String, dynamic> jsonResponse =
           response.data as Map<String, dynamic>;
-      debugPrint('📥 Respuesta del servidor: $jsonResponse');
 
       if (jsonResponse['success'] == true) {
-        debugPrint('✅ Archivo subido exitosamente');
         return EvidenceModel.fromJson(jsonResponse['data']);
       }
       throw Exception(jsonResponse['message'] ?? 'Failed to add file evidence');
     } catch (e) {
-      debugPrint('❌ Error al subir archivo: $e');
-      if (e is DioException) {
-        debugPrint('❌ Respuesta del servidor: ${e.response?.data}');
-      }
+      if (e is DioException) {}
       rethrow;
     }
   }

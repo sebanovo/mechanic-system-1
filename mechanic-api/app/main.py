@@ -8,6 +8,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.bootstrap.seed import seed_initial_platform_admin
 from app.common.exceptions import register_exception_handlers
+from app.common.openapi import API_DESCRIPTION, OPENAPI_TAGS, configure_openapi
 from app.common.responses import success_response
 from app.core.config import settings
 from app.core.database import SessionLocal
@@ -46,8 +47,15 @@ async def lifespan(_: FastAPI):
 
 def create_application() -> FastAPI:
     application = FastAPI(
-        title=settings.app_name,
+        title="Mechanic System Emergency Assistance API",
         version=settings.app_version,
+        summary="API backend para atención inteligente de emergencias vehiculares.",
+        description=API_DESCRIPTION,
+        contact={
+            "name": "Mechanic System Backend Team",
+            "email": "backend@mechanic.local",
+        },
+        openapi_tags=OPENAPI_TAGS,
         docs_url="/docs" if settings.docs_enabled else None,
         redoc_url="/redoc" if settings.docs_enabled else None,
         openapi_url="/openapi.json" if settings.docs_enabled else None,
@@ -129,7 +137,10 @@ def create_application() -> FastAPI:
             },
         )
 
+    configure_openapi(application)
+
     return application
 
 
 app = create_application()
+application = app

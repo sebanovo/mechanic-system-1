@@ -4,11 +4,18 @@
 
 ## 🏗 Estructura del proyecto
 
+frontend `mechanic_mobile` en flutter <br>
 backend `mechanic-api` desarrollado con FastAPI <br>
 Frontend `mechanic-web` en Angular.
 
 ```
 mechanic-system/
+├── mechanic_mobile/
+|   ├── assets/               # Imagenes
+|   ├── lib/                  # Codigo fuente
+|   ├── pubspec.yaml          # Librerias y configuración
+│   └── ...
+│
 ├── mechanic-api/              # Backend (FastAPI)
 │   ├── .devcontainer/         # Configuración para entorno de desarrollo
 │   │   ├── Dockerfile
@@ -37,7 +44,7 @@ mechanic-system/
 |-----------------|-------------------|--------|---------------|
 | serv-mech-web   | Angular           | 4200   | Interfaz web  |
 | serv-mech-api   | Python            | 8000   | FAST API      |
-| serv-mech-db     | PostgreSQL        | 5432   | Base de datos |
+| serv-mech-db    | PostgreSQL        | 5432   | Base de datos |
 
 ---
 
@@ -166,4 +173,4 @@ docker volume prune
 </div>
 <hr>
 
-last modified: 4/04/2026
+last modified: 26/04/2026
