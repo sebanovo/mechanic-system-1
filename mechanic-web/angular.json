@@ -57,6 +57,11 @@
           "defaultConfiguration": "production"
         },
         "serve": {
+          "options": {
+            "poll": 500,
+            "host": "0.0.0.0",
+            "proxyConfig": "proxy.conf.json"
+          },
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
