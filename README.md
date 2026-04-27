@@ -15,6 +15,7 @@ mechanic-system/
 |   ├── lib/                  # Codigo fuente
 |   ├── pubspec.yaml          # Librerias y configuración
 │   └── ...
+│
 ├── mechanic-api/              # Backend (FastAPI)
 │   ├── .devcontainer/         # Configuración para entorno de desarrollo
 │   │   ├── Dockerfile
@@ -172,4 +173,4 @@ docker volume prune
 </div>
 <hr>
 
-last modified: 4/04/2026
+last modified: 26/04/2026

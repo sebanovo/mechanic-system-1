@@ -58,7 +58,7 @@ services:
       start_period: 15s
 
   serv-mech-worker:
-    image: sebastiandevjs/mech-worker:1.0.0  # misma imagen que api, distinto command
+    image: sebastiandevjs/mech-api:1.0.0  # misma imagen que api, distinto command
     restart: unless-stopped
     command: ["/app/scripts/start_worker.sh"]
     env_file:
