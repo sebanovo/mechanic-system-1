@@ -22,4 +22,13 @@ export const PROVIDERS_ROUTES: Routes = [
 				m => m.TechnicianListPage
 			),
 	},
+
+	//Usa la feature provider-services
+	{
+		path: ":id/services",
+		loadComponent: () =>
+			import("../provider-services/pages/provider-service-list-page/provider-service-list-page").then(
+				m => m.ProviderServiceListPage
+			),
+	},
 ];

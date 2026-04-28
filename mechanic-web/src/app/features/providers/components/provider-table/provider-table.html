@@ -126,7 +126,10 @@
 									<hlm-dropdown-menu-separator />
 
 									<hlm-dropdown-menu-group>
-										<button hlmDropdownMenuItem>
+										<button
+											hlmDropdownMenuItem
+											(click)="onListarServicios(provider)"
+										>
 											<ng-icon name="lucideWrench" class="text-foreground" />
 											<span>Servicios</span>
 										</button>
