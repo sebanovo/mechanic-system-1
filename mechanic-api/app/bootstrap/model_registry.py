@@ -18,4 +18,5 @@ from app.services.billing import models as billing_models  # noqa: F401
 from app.services.subscriptions import models as subscriptions_models  # noqa: F401
 from app.services.jobs import models as jobs_models  # noqa: F401
 from app.services.notifications import models as notifications_models  # noqa: F401
+from app.services.ratings import models as ratings_models  # noqa: F401
 from app.services.audit import models as audit_models  # noqa: F401

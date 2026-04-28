@@ -67,6 +67,12 @@ from app.services.evidences.models import IncidentEvidence
 from app.services.assignment.models import IncidentAssignmentCandidate
 from app.services.operations.models import IncidentOperationEvent
 from app.services.tracking.models import IncidentResponderLocationPing
+from app.bootstrap.demo_seed_step_05 import (
+    seed_step_05_billing_subscriptions_notifications_and_audit,
+)
+from app.bootstrap.demo_seed_step_06_technician_mobile import (
+    seed_step_06_technician_mobile_users,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -1414,7 +1420,15 @@ def seed_demo_data(db: Session) -> None:
         ("step_02_technicians_vehicles_and_services", seed_step_02_technicians_vehicles_and_services),
         ("step_03_incidents_evidences_and_ai", seed_step_03_incidents_evidences_and_ai),
         ("step_04_assignment_operations_and_tracking", seed_step_04_assignment_operations_and_tracking),
-        # ("step_05_billing_subscriptions_notifications_and_audit", seed_step_05_billing_subscriptions_notifications_and_audit),
+        (
+        "step_05_billing_subscriptions_notifications_and_audit",
+        seed_step_05_billing_subscriptions_notifications_and_audit,
+        ),
+        (
+            "step_06_technician_mobile_users",
+            seed_step_06_technician_mobile_users,
+        ),
+        
     ]
 
     for step_name, step_function in seed_steps:
