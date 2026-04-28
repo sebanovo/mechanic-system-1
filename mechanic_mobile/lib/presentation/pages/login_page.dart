@@ -61,15 +61,14 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  // ✅ Validación de contraseña actualizada: solo 8 caracteres, sin número
   void _validatePassword() {
     setState(() {
       final password = _passwordController.text;
       if (password.isEmpty) {
         _passwordError = null;
-      } else if (password.length < 6) {
-        _passwordError = 'La contraseña debe tener al menos 6 caracteres';
-      } else if (!RegExp(r'[0-9]').hasMatch(password)) {
-        _passwordError = 'La contraseña debe contener al menos 1 número';
+      } else if (password.length < 8) {
+        _passwordError = 'La contraseña debe tener al menos 8 caracteres';
       } else {
         _passwordError = null;
       }
@@ -96,11 +95,8 @@ class _LoginPageState extends State<LoginPage> {
     if (password.isEmpty) {
       _passwordError = 'La contraseña es requerida';
       isValid = false;
-    } else if (password.length < 6) {
-      _passwordError = 'La contraseña debe tener al menos 6 caracteres';
-      isValid = false;
-    } else if (!RegExp(r'[0-9]').hasMatch(password)) {
-      _passwordError = 'La contraseña debe contener al menos 1 número';
+    } else if (password.length < 8) {
+      _passwordError = 'La contraseña debe tener al menos 8 caracteres';
       isValid = false;
     } else {
       _passwordError = null;
@@ -308,26 +304,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-                        // Requisitos de contraseña (indicadores visuales)
-                        if (_passwordController.text.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8, left: 12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildRequirementIndicator(
-                                  'Mínimo 6 caracteres',
-                                  _passwordController.text.length >= 6,
-                                ),
-                                _buildRequirementIndicator(
-                                  'Al menos 1 número',
-                                  RegExp(
-                                    r'[0-9]',
-                                  ).hasMatch(_passwordController.text),
-                                ),
-                              ],
-                            ),
-                          ),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -468,26 +444,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildRequirementIndicator(String text, bool isMet) {
-    return Row(
-      children: [
-        Icon(
-          isMet ? Icons.check_circle : Icons.circle_outlined,
-          size: 14,
-          color: isMet ? Colors.green.shade600 : Colors.grey.shade400,
-        ),
-        const SizedBox(width: 6),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 12,
-            color: isMet ? Colors.green.shade600 : Colors.grey.shade500,
-          ),
-        ),
-      ],
     );
   }
 }

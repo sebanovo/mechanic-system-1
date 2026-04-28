@@ -29,8 +29,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final _cityController = TextEditingController();
   final _addressController = TextEditingController();
 
-  final bool _showPassword = false;
-  final bool _showConfirmPassword = false;
+  // ✅ Variables para mostrar/ocultar contraseñas
+  bool _showPassword = false;
+  bool _showConfirmPassword = false;
   String _accountType = 'CLIENT';
   bool _acceptedTerms = false;
 
@@ -107,15 +108,14 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
+  // ✅ Validación de contraseña actualizada: solo 8 caracteres
   void _validatePassword() {
     setState(() {
       final password = _passwordController.text;
       if (password.isEmpty) {
         _passwordError = null;
-      } else if (password.length < 6) {
-        _passwordError = 'La contraseña debe tener al menos 6 caracteres';
-      } else if (!RegExp(r'[0-9]').hasMatch(password)) {
-        _passwordError = 'La contraseña debe contener al menos 1 número';
+      } else if (password.length < 8) {
+        _passwordError = 'La contraseña debe tener al menos 8 caracteres';
       } else {
         _passwordError = null;
       }
@@ -261,16 +261,13 @@ class _RegisterPageState extends State<RegisterPage> {
       _emailError = null;
     }
 
-    // Validar password
+    // ✅ Validar password (solo 8 caracteres)
     final password = _passwordController.text;
     if (password.isEmpty) {
       _passwordError = 'La contraseña es requerida';
       isValid = false;
-    } else if (password.length < 6) {
-      _passwordError = 'La contraseña debe tener al menos 6 caracteres';
-      isValid = false;
-    } else if (!RegExp(r'[0-9]').hasMatch(password)) {
-      _passwordError = 'La contraseña debe contener al menos 1 número';
+    } else if (password.length < 8) {
+      _passwordError = 'La contraseña debe tener al menos 8 caracteres';
       isValid = false;
     } else {
       _passwordError = null;
@@ -418,6 +415,7 @@ class _RegisterPageState extends State<RegisterPage> {
     TextInputType keyboardType = TextInputType.text,
     String? errorText,
     VoidCallback? onChanged,
+    Widget? suffixIcon,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -436,6 +434,7 @@ class _RegisterPageState extends State<RegisterPage> {
               prefixIcon: prefixIcon != null
                   ? Icon(prefixIcon, color: Colors.blue.shade700)
                   : null,
+              suffixIcon: suffixIcon,
               errorText: errorText,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -543,33 +542,20 @@ class _RegisterPageState extends State<RegisterPage> {
                           label: 'Contraseña',
                           obscure: !_showPassword,
                           prefixIcon: Icons.lock_outline,
-                          hint: 'Mínimo 6 caracteres y 1 número',
+                          hint: 'Mínimo 8 caracteres',
                           errorText: _passwordError,
-                        ),
-                        if (_passwordController.text.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 12,
-                              top: 4,
-                              bottom: 8,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _showPassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.grey.shade500,
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildRequirementIndicator(
-                                  'Mínimo 6 caracteres',
-                                  _passwordController.text.length >= 6,
-                                ),
-                                const SizedBox(height: 4),
-                                _buildRequirementIndicator(
-                                  'Al menos 1 número',
-                                  RegExp(
-                                    r'[0-9]',
-                                  ).hasMatch(_passwordController.text),
-                                ),
-                              ],
-                            ),
+                            onPressed: () {
+                              setState(() => _showPassword = !_showPassword);
+                            },
                           ),
+                        ),
                       ],
                     ),
 
@@ -580,6 +566,19 @@ class _RegisterPageState extends State<RegisterPage> {
                       obscure: !_showConfirmPassword,
                       prefixIcon: Icons.lock_outline,
                       errorText: _confirmPasswordError,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showConfirmPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.grey.shade500,
+                        ),
+                        onPressed: () {
+                          setState(
+                            () => _showConfirmPassword = !_showConfirmPassword,
+                          );
+                        },
+                      ),
                     ),
 
                     // First name
@@ -896,26 +895,6 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         },
       ),
-    );
-  }
-
-  Widget _buildRequirementIndicator(String text, bool isMet) {
-    return Row(
-      children: [
-        Icon(
-          isMet ? Icons.check_circle : Icons.circle_outlined,
-          size: 14,
-          color: isMet ? Colors.green.shade600 : Colors.grey.shade400,
-        ),
-        const SizedBox(width: 6),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 12,
-            color: isMet ? Colors.green.shade600 : Colors.grey.shade500,
-          ),
-        ),
-      ],
     );
   }
 }
