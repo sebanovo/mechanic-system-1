@@ -135,40 +135,47 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(color: Colors.blue.shade800),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment
+                          .center, // Centra verticalmente para evitar desborde inferior
                       children: [
                         CircleAvatar(
-                          radius: 30,
+                          radius: 24, // Reducido de 30 a 24
                           backgroundColor: Colors.white,
                           child: Icon(
                             _getRoleIcon(userRole),
-                            size: 35,
+                            size: 28, // Reducido de 35 a 28
                             color: Colors.blue.shade800,
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          user?.fullName ?? 'Cargando...',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        const SizedBox(height: 8), // Reducido de 12 a 8
+                        Flexible(
+                          child: Text(
+                            user?.fullName ?? 'Cargando...',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15, // Reducido de 18 a 15
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                        Text(
-                          user?.email ?? '',
-                          style: TextStyle(
-                            color: Colors.blue.shade100,
-                            fontSize: 14,
+                        const SizedBox(height: 2), // Reducido de 4 a 2
+                        Flexible(
+                          child: Text(
+                            user?.email ?? '',
+                            style: TextStyle(
+                              color: Colors.blue.shade100,
+                              fontSize: 11, // Reducido de 14 a 11
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 4), // Espacio antes del chip
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
+                            horizontal: 6,
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
@@ -179,14 +186,13 @@ class _HomePageState extends State<HomePage> {
                             _getRoleDisplayName(user?.roleCodes),
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 11,
-                            ),
+                              fontSize: 10,
+                            ), // Fuente más pequeña
                           ),
                         ),
                       ],
                     ),
                   ),
-
                   // Menú principal
                   _buildDrawerItem(
                     icon: Icons.home,
@@ -293,6 +299,14 @@ class _HomePageState extends State<HomePage> {
                     onTap: () {
                       context.pop();
                       context.push('/devices');
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.map,
+                    title: 'Mapa de prueba',
+                    onTap: () {
+                      context.pop();
+                      context.push('/map');
                     },
                   ),
 
