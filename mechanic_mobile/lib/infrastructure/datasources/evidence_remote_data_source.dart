@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mechanic_mobile/core/network/api_client.dart';
-
 import '../models/evidence_model.dart';
 
 abstract class EvidenceRemoteDataSource {
@@ -27,18 +26,20 @@ class EvidenceRemoteDataSourceImpl implements EvidenceRemoteDataSource {
     String incidentId,
     Map<String, dynamic> params,
   ) async {
-    final response = await _apiClient.post(
-      '/api/evidences/client/incidents/$incidentId/text',
-      params,
-    );
-
-    final Map<String, dynamic> jsonResponse =
-        response.data as Map<String, dynamic>;
-
-    if (jsonResponse['success'] == true) {
-      return EvidenceModel.fromJson(jsonResponse['data']);
+    try {
+      final response = await _apiClient.post(
+        '/api/evidences/client/incidents/$incidentId/text',
+        params,
+      );
+      final Map<String, dynamic> jsonResponse =
+          response.data as Map<String, dynamic>;
+      if (jsonResponse['success'] == true) {
+        return EvidenceModel.fromJson(jsonResponse['data']);
+      }
+      throw Exception(jsonResponse['message'] ?? 'Failed to add text evidence');
+    } on DioException catch (e) {
+      throw Exception(_getErrorMessage(e));
     }
-    throw Exception(jsonResponse['message'] ?? 'Failed to add text evidence');
   }
 
   @override
@@ -52,15 +53,13 @@ class EvidenceRemoteDataSourceImpl implements EvidenceRemoteDataSource {
       final fileName = file.name;
       final bytes = await file.readAsBytes();
 
-      // Determinar mime type
       final extension = fileName.split('.').last.toLowerCase();
       final mimeType = evidenceType == 'IMAGE'
           ? (extension == 'png' ? 'image/png' : 'image/jpeg')
           : 'audio/mpeg';
 
-      // ✅ Asegurar que los campos son correctos
       final additionalFields = {
-        'evidence_type': evidenceType, // Debe ser "IMAGE", "TEXT" o "AUDIO"
+        'evidence_type': evidenceType,
         'description': description,
       };
 
@@ -75,14 +74,25 @@ class EvidenceRemoteDataSourceImpl implements EvidenceRemoteDataSource {
 
       final Map<String, dynamic> jsonResponse =
           response.data as Map<String, dynamic>;
-
       if (jsonResponse['success'] == true) {
         return EvidenceModel.fromJson(jsonResponse['data']);
       }
       throw Exception(jsonResponse['message'] ?? 'Failed to add file evidence');
+    } on DioException catch (e) {
+      throw Exception(_getErrorMessage(e));
     } catch (e) {
-      if (e is DioException) {}
-      rethrow;
+      throw Exception('Error al subir el archivo: $e');
     }
+  }
+
+  String _getErrorMessage(DioException e) {
+    if (e.response != null) {
+      final data = e.response?.data;
+      if (data != null && data['message'] != null) {
+        return data['message'] as String;
+      }
+      return 'Error del servidor: ${e.response?.statusCode}';
+    }
+    return 'Error de red: ${e.message}';
   }
 }

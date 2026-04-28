@@ -17,13 +17,11 @@ A new Flutter project.
     └── 📁data
         └── 📁datasources
             ├── mock_auth_data_source.dart
-            ├── mock_service_data_source.dart
         └── 📁models
             ├── service_request_model.dart
             ├── user_model.dart
         └── 📁repositories
             ├── auth_repository_impl.dart
-            ├── service_request_repository_impl.dart
     └── 📁domain
         └── 📁entities
             ├── service_request.dart

@@ -48,6 +48,8 @@ services:
     depends_on:
       serv-mech-db:
         condition: service_healthy
+      serv-mech-redis:
+        condition: service_healthy
     networks:
       - mechanic-net
     healthcheck:
