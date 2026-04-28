@@ -1,4 +1,3 @@
-import 'package:image_picker/image_picker.dart';
 import '../../domain/entities/evidence.dart';
 import '../../domain/usecases/add_text_evidence_usecase.dart';
 import '../../domain/usecases/add_file_evidence_usecase.dart';

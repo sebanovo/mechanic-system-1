@@ -22,28 +22,28 @@ class _ProviderActiveOperationsPageState
     _viewModel.loadActiveOperations();
   }
 
-  void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(
-              isError ? Icons.error_outline : Icons.check_circle_outline,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 12),
-            Expanded(child: Text(message)),
-          ],
-        ),
-        backgroundColor: isError ? Colors.red.shade700 : Colors.blue.shade700,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.all(12),
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
+  // void _showSnackBar(String message, {bool isError = false}) {
+  //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Row(
+  //         children: [
+  //           Icon(
+  //             isError ? Icons.error_outline : Icons.check_circle_outline,
+  //             color: Colors.white,
+  //           ),
+  //           const SizedBox(width: 12),
+  //           Expanded(child: Text(message)),
+  //         ],
+  //       ),
+  //       backgroundColor: isError ? Colors.red.shade700 : Colors.blue.shade700,
+  //       behavior: SnackBarBehavior.floating,
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  //       margin: const EdgeInsets.all(12),
+  //       duration: const Duration(seconds: 3),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +146,7 @@ class _ProviderActiveOperationsPageState
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                     side: BorderSide(
-                      color: operation.statusColor.withOpacity(0.3),
+                      color: operation.statusColor.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -168,7 +168,9 @@ class _ProviderActiveOperationsPageState
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: operation.statusColor.withOpacity(0.1),
+                                  color: operation.statusColor.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(
@@ -198,8 +200,9 @@ class _ProviderActiveOperationsPageState
                                         vertical: 2,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: operation.statusColor
-                                            .withOpacity(0.1),
+                                        color: operation.statusColor.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(

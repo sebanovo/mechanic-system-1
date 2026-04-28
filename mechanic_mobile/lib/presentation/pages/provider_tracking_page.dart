@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mechanic_mobile/core/di/injection_container.dart';
 import '../../domain/entities/tracking.dart';
 import '../viewmodels/provider_tracking_viewmodel.dart';
@@ -260,7 +259,7 @@ class _ProviderTrackingPageState extends State<ProviderTrackingPage> {
                         Card(
                           color: _getStatusColor(
                             _trackingData.status,
-                          ).withOpacity(0.1),
+                          ).withValues(alpha: 0.1),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),

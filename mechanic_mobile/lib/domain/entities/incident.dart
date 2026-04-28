@@ -1,9 +1,6 @@
 import 'package:mechanic_mobile/domain/entities/user.dart';
 import 'package:mechanic_mobile/domain/entities/vehicle.dart';
 
-import 'package:mechanic_mobile/domain/entities/user.dart';
-import 'package:mechanic_mobile/domain/entities/vehicle.dart';
-
 class Incident {
   final String id;
   final String clientUserId;

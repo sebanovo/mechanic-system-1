@@ -51,9 +51,10 @@ class Evidence {
 
   String get fileSizeFormatted {
     if (fileSizeBytes == null) return 'N/A';
-    if (fileSizeBytes! < 1024) return '${fileSizeBytes} B';
-    if (fileSizeBytes! < 1024 * 1024)
+    if (fileSizeBytes! < 1024) return '$fileSizeBytes B';
+    if (fileSizeBytes! < 1024 * 1024) {
       return '${(fileSizeBytes! / 1024).toStringAsFixed(1)} KB';
+    }
     return '${(fileSizeBytes! / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 }

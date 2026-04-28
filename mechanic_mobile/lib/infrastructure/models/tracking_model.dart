@@ -3,7 +3,6 @@ import 'package:mechanic_mobile/domain/entities/admin_incident.dart';
 import '../../domain/entities/tracking.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/entities/technician.dart';
-import '../../domain/entities/provider_profile.dart';
 
 class TrackingDataModel {
   final String incidentId;

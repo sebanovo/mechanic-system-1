@@ -42,9 +42,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _loadSavedCredentials() {
-    // TODO: Cargar credenciales guardadas si existe remember me
-  }
+  void _loadSavedCredentials() {}
 
   void _validateEmail() {
     setState(() {
@@ -453,7 +451,7 @@ class _LoginPageState extends State<LoginPage> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Demo: cliente@demo.com / 123456',
+                              'Demo: admin@mechanic.com / Admin12345',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.blue.shade700,

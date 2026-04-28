@@ -630,7 +630,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: DropdownButtonFormField<String>(
-                              value: _accountType,
+                              initialValue: _accountType,
                               decoration: const InputDecoration(
                                 border: InputBorder.none,
                                 contentPadding: EdgeInsets.symmetric(
@@ -875,7 +875,7 @@ class _RegisterPageState extends State<RegisterPage> {
               // Loading overlay
               if (isLoading)
                 Container(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   child: const Center(
                     child: Card(
                       child: Padding(

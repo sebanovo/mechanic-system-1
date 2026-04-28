@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final userRole = _getUserRole(_authViewModel.user?.roleCodes);
+    // final userRole = _getUserRole(_authViewModel.user?.roleCodes);
     final isClient = _hasRole(_authViewModel.user?.roleCodes, 'CLIENT');
     final isAdmin = _hasRole(_authViewModel.user?.roleCodes, 'PLATFORM_ADMIN');
 
@@ -236,6 +236,16 @@ class _HomePageState extends State<HomePage> {
                       onTap: () {
                         context.pop();
                         context.push('/provider-profile');
+                      },
+                    ),
+
+                  if (userRole == 'PLATFORM_ADMIN')
+                    _buildDrawerItem(
+                      icon: Icons.business_center,
+                      title: 'Proveedores',
+                      onTap: () {
+                        context.pop();
+                        context.push('/admin/providers');
                       },
                     ),
 

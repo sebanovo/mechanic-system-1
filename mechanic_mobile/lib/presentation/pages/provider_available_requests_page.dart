@@ -241,7 +241,7 @@ class _ProviderAvailableRequestsPageState
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: priorityColor.withOpacity(0.3), width: 1),
+        side: BorderSide(color: priorityColor.withValues(alpha: 0.3), width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -254,7 +254,7 @@ class _ProviderAvailableRequestsPageState
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: priorityColor.withOpacity(0.1),
+                    color: priorityColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -288,7 +288,7 @@ class _ProviderAvailableRequestsPageState
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: priorityColor.withOpacity(0.1),
+                              color: priorityColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(

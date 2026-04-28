@@ -278,7 +278,7 @@ class _TechniciansPageState extends State<TechniciansPage> {
                   title: const Text('Disponible'),
                   value: isAvailable,
                   onChanged: (value) => isAvailable = value,
-                  activeColor: Colors.blue.shade700,
+                  activeThumbColor: Colors.blue.shade700,
                   contentPadding: EdgeInsets.zero,
                 ),
               ],

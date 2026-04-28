@@ -114,7 +114,7 @@ class _IncidentDetailPageState extends State<IncidentDetailPage> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: color.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, size: 18, color: color),
@@ -182,7 +182,9 @@ class _IncidentDetailPageState extends State<IncidentDetailPage> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(_incident.status).withOpacity(0.1),
+                    color: _getStatusColor(
+                      _incident.status,
+                    ).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -214,7 +216,7 @@ class _IncidentDetailPageState extends State<IncidentDetailPage> {
                   decoration: BoxDecoration(
                     color: _getPriorityColor(
                       _incident.priority,
-                    ).withOpacity(0.1),
+                    ).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
