@@ -25,6 +25,7 @@ from app.services.jobs.router import router as jobs_router
 from app.services.notifications.router import router as notifications_router
 from app.services.operations.router import router as operations_router
 from app.services.providers.router import router as providers_router
+from app.services.ratings.router import router as ratings_router
 from app.services.subscriptions.router import router as subscriptions_router
 from app.services.system.router import router as system_router
 from app.services.tracking.router import router as tracking_router
@@ -93,6 +94,7 @@ def create_application() -> FastAPI:
     application.include_router(auth_router, prefix=settings.api_v1_prefix)
     application.include_router(users_router, prefix=settings.api_v1_prefix)
     application.include_router(providers_router, prefix=settings.api_v1_prefix)
+    application.include_router(ratings_router, prefix=settings.api_v1_prefix)
     application.include_router(catalog_router, prefix=settings.api_v1_prefix)
     application.include_router(vehicles_router, prefix=settings.api_v1_prefix)
     application.include_router(incidents_router, prefix=settings.api_v1_prefix)
