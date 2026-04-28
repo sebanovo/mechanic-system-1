@@ -26,28 +26,28 @@ class _ClientTrackingPageState extends State<ClientTrackingPage> {
     await _viewModel.loadTrackingHistory(widget.incidentId);
   }
 
-  void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(
-              isError ? Icons.error_outline : Icons.check_circle_outline,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 12),
-            Expanded(child: Text(message)),
-          ],
-        ),
-        backgroundColor: isError ? Colors.red.shade700 : Colors.blue.shade700,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.all(12),
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
+  // void _showSnackBar(String message, {bool isError = false}) {
+  //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Row(
+  //         children: [
+  //           Icon(
+  //             isError ? Icons.error_outline : Icons.check_circle_outline,
+  //             color: Colors.white,
+  //           ),
+  //           const SizedBox(width: 12),
+  //           Expanded(child: Text(message)),
+  //         ],
+  //       ),
+  //       backgroundColor: isError ? Colors.red.shade700 : Colors.blue.shade700,
+  //       behavior: SnackBarBehavior.floating,
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  //       margin: const EdgeInsets.all(12),
+  //       duration: const Duration(seconds: 3),
+  //     ),
+  //   );
+  // }
 
   String _formatDateTime(DateTime? date) {
     if (date == null) return 'N/A';
@@ -143,7 +143,9 @@ class _ClientTrackingPageState extends State<ClientTrackingPage> {
                       children: [
                         // Estado actual
                         Card(
-                          color: _getStatusColor(data.status).withOpacity(0.1),
+                          color: _getStatusColor(
+                            data.status,
+                          ).withValues(alpha: 0.1),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),

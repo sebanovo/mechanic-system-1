@@ -21,7 +21,6 @@ class _HomePageState extends State<HomePage> {
     _viewModel = sl<HomeViewModel>();
     _authViewModel = sl<AuthViewModel>();
 
-    // Cargar datos del usuario si no existen
     if (_authViewModel.user == null) {
       _authViewModel.loadMe();
     }
@@ -68,7 +67,6 @@ class _HomePageState extends State<HomePage> {
     context.go('/login');
   }
 
-  // ✅ Obtener el primer rol de la lista de roleCodes
   String? _getUserRole(List<String>? roleCodes) {
     if (roleCodes == null || roleCodes.isEmpty) return null;
     return roleCodes.first;
@@ -90,14 +88,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // ✅ Verificar si el usuario tiene un rol específico
   bool _hasRole(List<String>? roleCodes, String role) {
     return roleCodes?.contains(role) ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
-    final userRole = _getUserRole(_authViewModel.user?.roleCodes);
     final isClient = _hasRole(_authViewModel.user?.roleCodes, 'CLIENT');
     final isAdmin = _hasRole(_authViewModel.user?.roleCodes, 'PLATFORM_ADMIN');
 
@@ -108,13 +104,10 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: Colors.white,
         elevation: 2,
         actions: [
-          // Solo mostrar vehículos si es CLIENT
           if (isClient)
             IconButton(
               icon: const Icon(Icons.directions_car),
-              onPressed: () {
-                context.push('/vehicles');
-              },
+              onPressed: () => context.push('/vehicles'),
               tooltip: 'Mis vehículos',
             ),
           IconButton(
@@ -144,19 +137,16 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Colors.white,
-                              child: Icon(
-                                _getRoleIcon(userRole),
-                                size: 35,
-                                color: Colors.blue.shade800,
-                              ),
-                            ),
-                          ],
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.white,
+                          child: Icon(
+                            _getRoleIcon(userRole),
+                            size: 35,
+                            color: Colors.blue.shade800,
+                          ),
                         ),
+                        const SizedBox(height: 12),
                         Text(
                           user?.fullName ?? 'Cargando...',
                           style: const TextStyle(
@@ -197,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
 
-                  // Opciones del menú
+                  // Menú principal
                   _buildDrawerItem(
                     icon: Icons.home,
                     title: 'Inicio',
@@ -207,7 +197,6 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
 
-                  // Solo mostrar vehículos si es CLIENT
                   if (isClient)
                     _buildDrawerItem(
                       icon: Icons.directions_car,
@@ -218,7 +207,6 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
-                  // Solo mostrar técnicos si es PROVIDER_ADMIN
                   if (isProvider)
                     _buildDrawerItem(
                       icon: Icons.construction,
@@ -239,6 +227,16 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
+                  if (userRole == 'PLATFORM_ADMIN')
+                    _buildDrawerItem(
+                      icon: Icons.business_center,
+                      title: 'Proveedores',
+                      onTap: () {
+                        context.pop();
+                        context.push('/admin/providers');
+                      },
+                    ),
+
                   if (isProvider)
                     _buildDrawerItem(
                       icon: Icons.miscellaneous_services,
@@ -249,7 +247,6 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
-                  // Admin puede ir a la gestión de incidentes
                   if (isAdmin)
                     _buildDrawerItem(
                       icon: Icons.admin_panel_settings,
@@ -260,7 +257,6 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
-                  // Provider: Solicitudes disponibles
                   if (isProvider)
                     _buildDrawerItem(
                       icon: Icons.list_alt,
@@ -271,7 +267,6 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
-                  // Provider: Operaciones activas
                   if (isProvider)
                     _buildDrawerItem(
                       icon: Icons.engineering,
@@ -282,7 +277,6 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
-                  // Cliente: Mis solicitudes (navegar a lista completa)
                   if (isClient)
                     _buildDrawerItem(
                       icon: Icons.list_alt,
@@ -345,9 +339,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: () {
-                      _loadIncidentsByRole();
-                    },
+                    onPressed: _loadIncidentsByRole,
                     icon: const Icon(Icons.refresh),
                     label: const Text('Reintentar'),
                     style: ElevatedButton.styleFrom(
@@ -360,41 +352,13 @@ class _HomePageState extends State<HomePage> {
             );
           }
 
+          // 🟢 NUEVO: Cuando no hay datos, mostramos un calendario decorativo
           if (_viewModel.requests.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.inbox, size: 64, color: Colors.blue.shade200),
-                  const SizedBox(height: 16),
-                  Text(
-                    isAdmin
-                        ? 'No hay incidentes registrados'
-                        : 'No hay solicitudes activas',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey.shade600,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (isClient)
-                    Text(
-                      'Toca el botón + para solicitar auxilio',
-                      style: TextStyle(color: Colors.grey.shade500),
-                    ),
-                  if (isAdmin)
-                    Text(
-                      'Los incidentes aparecerán aquí cuando los clientes los creen',
-                      style: TextStyle(color: Colors.grey.shade500),
-                    ),
-                ],
-              ),
-            );
+            return _buildEmptyState(isAdmin);
           }
 
           return RefreshIndicator(
-            onRefresh: () => _loadIncidentsByRole(),
+            onRefresh: _loadIncidentsByRole,
             color: Colors.blue,
             child: ListView.builder(
               padding: const EdgeInsets.all(12),
@@ -409,9 +373,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: isClient
           ? FloatingActionButton.extended(
-              onPressed: () {
-                context.push('/create-incident');
-              },
+              onPressed: () => context.push('/create-incident'),
               icon: const Icon(Icons.add),
               label: const Text('Nueva solicitud'),
               backgroundColor: Colors.blue.shade700,
@@ -419,6 +381,66 @@ class _HomePageState extends State<HomePage> {
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  // 🗓️ Widget decorativo: calendario con la fecha de hoy
+  Widget _buildEmptyState(bool isAdmin) {
+    final now = DateTime.now();
+    final weekdays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+    final months = [
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre',
+    ];
+
+    return Center(
+      child: Card(
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        margin: const EdgeInsets.all(24),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.blue.shade50, Colors.white],
+            ),
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.calendar_today, size: 48, color: Colors.blue),
+              const SizedBox(height: 16),
+              Text(
+                '${weekdays[now.weekday - 1]}, ${now.day} de ${months[now.month - 1]}',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                now.year.toString(),
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              ),
+              const Divider(height: 32),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -462,29 +484,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildRequestCard(dynamic request, bool isAdmin) {
-    // ✅ Obtener valores de forma segura (usando try-catch o verificando existencia)
     final String id = request.id ?? '';
-
-    // ✅ Status - casi siempre existe
     final String status = request.status ?? 'PENDING';
 
-    // ✅ Priority - puede llamarse 'priority' o 'servicePriority'
     String priority = 'MEDIUM';
     try {
       priority = request.priority ?? request.servicePriority ?? 'MEDIUM';
-    } catch (e) {
-      priority = 'MEDIUM';
-    }
+    } catch (_) {}
 
-    // ✅ Título - puede ser 'title' o 'description'
     String title = '';
     try {
       title = request.title ?? request.description ?? 'Sin título';
-    } catch (e) {
+    } catch (_) {
       title = request.description ?? 'Sin título';
     }
 
-    // ✅ Nombre del taller/técnico
     String assignedTo = 'Buscando taller...';
     try {
       if (request.assignedTechnician?.fullName != null) {
@@ -495,27 +509,18 @@ class _HomePageState extends State<HomePage> {
           request.mechanicName.isNotEmpty) {
         assignedTo = request.mechanicName;
       }
-    } catch (e) {
-      assignedTo = 'En proceso...';
-    }
+    } catch (_) {}
 
-    // ✅ Nombre del cliente (para admin)
     String clientName = '';
     try {
       if (request.clientUser?.fullName != null) {
         clientName = request.clientUser!.fullName;
       }
-    } catch (e) {
-      clientName = '';
-    }
+    } catch (_) {}
 
     final statusConfig = _getStatusConfig(status);
-
-    // Título para admin
     String displayTitle = title;
-    if (isAdmin && clientName.isNotEmpty) {
-      displayTitle = '$clientName: $title';
-    }
+    if (isAdmin && clientName.isNotEmpty) displayTitle = '$clientName: $title';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -606,9 +611,9 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: Text(
                       assignedTo,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: Color.fromRGBO(117, 117, 117, 1),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -649,9 +654,9 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                       child: Text(
                         request.provider!.businessName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 11,
-                          color: Colors.grey.shade500,
+                          color: Color.fromRGBO(158, 158, 158, 1),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

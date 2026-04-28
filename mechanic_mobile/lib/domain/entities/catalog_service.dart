@@ -73,7 +73,7 @@ class ProviderService {
     required this.updatedAt,
   });
 
-  String get priceRange => '\$${priceEstimateMin} - \$${priceEstimateMax}';
+  String get priceRange => '\$$priceEstimateMin - \$$priceEstimateMax';
   String get displayTitle => customTitle ?? catalogTitle;
   String get displayDescription => customDescription ?? catalogDescription;
 }

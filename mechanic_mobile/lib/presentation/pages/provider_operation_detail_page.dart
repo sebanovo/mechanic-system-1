@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:mechanic_mobile/core/di/injection_container.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/technicians_viewmodel.dart';
 import '../../domain/entities/provider_operation.dart';
-import '../../domain/entities/technician.dart';
 import '../viewmodels/provider_operation_viewmodel.dart';
 
 class ProviderOperationDetailPage extends StatefulWidget {
@@ -20,7 +19,6 @@ class _ProviderOperationDetailPageState
     extends State<ProviderOperationDetailPage> {
   late ProviderOperationViewModel _viewModel;
   late ProviderOperation _operation;
-  List<Technician> _technicians = [];
 
   @override
   void initState() {
@@ -317,7 +315,7 @@ class _ProviderOperationDetailPageState
               children: [
                 // Estado actual
                 Card(
-                  color: _operation.statusColor.withOpacity(0.1),
+                  color: _operation.statusColor.withValues(alpha: 0.1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -690,7 +688,7 @@ class _ProviderOperationDetailPageState
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 18, color: color),

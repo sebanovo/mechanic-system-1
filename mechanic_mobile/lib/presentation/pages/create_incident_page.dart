@@ -82,7 +82,6 @@ class _CreateIncidentPageState extends State<CreateIncidentPage> {
   }
 
   Future<void> _getCurrentLocation() async {
-    // TODO: Implementar geolocalización
     _showSnackBar('Obtener ubicación actual (implementar GPS)');
   }
 
@@ -192,7 +191,7 @@ class _CreateIncidentPageState extends State<CreateIncidentPage> {
                 children: [
                   // Selección de vehículo
                   DropdownButtonFormField<String>(
-                    value: _selectedVehicleId,
+                    initialValue: _selectedVehicleId,
                     decoration: const InputDecoration(
                       labelText: 'Vehículo *',
                       prefixIcon: Icon(Icons.directions_car),
@@ -244,7 +243,7 @@ class _CreateIncidentPageState extends State<CreateIncidentPage> {
 
                   // Categoría
                   DropdownButtonFormField<String>(
-                    value: _selectedCategory,
+                    initialValue: _selectedCategory,
                     decoration: const InputDecoration(
                       labelText: 'Categoría *',
                       prefixIcon: Icon(Icons.category),
@@ -263,7 +262,7 @@ class _CreateIncidentPageState extends State<CreateIncidentPage> {
 
                   // Prioridad
                   DropdownButtonFormField<String>(
-                    value: _selectedPriority,
+                    initialValue: _selectedPriority,
                     decoration: const InputDecoration(
                       labelText: 'Prioridad *',
                       prefixIcon: Icon(Icons.priority_high),

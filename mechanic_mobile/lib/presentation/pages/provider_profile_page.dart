@@ -334,7 +334,7 @@ class _ProviderProfilePageState extends State<ProviderProfilePage> {
                       ),
                       value: profile.isAvailable,
                       onChanged: (_) => _viewModel.toggleAvailability(),
-                      activeColor: Colors.green,
+                      activeThumbColor: Colors.green,
                       inactiveThumbColor: Colors.red.shade300,
                     ),
                   ),

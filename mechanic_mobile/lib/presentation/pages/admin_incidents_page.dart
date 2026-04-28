@@ -303,7 +303,7 @@ class _AdminIncidentsPageState extends State<AdminIncidentsPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: incident.statusColor.withOpacity(0.3),
+          color: incident.statusColor.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -322,7 +322,7 @@ class _AdminIncidentsPageState extends State<AdminIncidentsPage> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: incident.statusColor.withOpacity(0.1),
+                      color: incident.statusColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -351,7 +351,7 @@ class _AdminIncidentsPageState extends State<AdminIncidentsPage> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: incident.statusColor.withOpacity(0.1),
+                            color: incident.statusColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(

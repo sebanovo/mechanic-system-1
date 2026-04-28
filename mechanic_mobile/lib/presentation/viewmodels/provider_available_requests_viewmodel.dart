@@ -8,7 +8,6 @@ import '../../domain/usecases/reject_candidate_usecase.dart';
 class ProviderAvailableRequestsViewModel extends ChangeNotifier {
   final GetAvailableCandidatesUseCase _getAvailableCandidatesUseCase;
   final GetCandidateDetailsUseCase _getCandidateDetailsUseCase;
-  final AcceptCandidateUseCase _acceptCandidateUseCase;
   final RejectCandidateUseCase _rejectCandidateUseCase;
 
   List<ProviderCandidate> _candidates = [];
@@ -23,7 +22,6 @@ class ProviderAvailableRequestsViewModel extends ChangeNotifier {
     required RejectCandidateUseCase rejectCandidateUseCase,
   }) : _getAvailableCandidatesUseCase = getAvailableCandidatesUseCase,
        _getCandidateDetailsUseCase = getCandidateDetailsUseCase,
-       _acceptCandidateUseCase = acceptCandidateUseCase,
        _rejectCandidateUseCase = rejectCandidateUseCase;
 
   List<ProviderCandidate> get candidates => _candidates;
@@ -68,7 +66,6 @@ class ProviderAvailableRequestsViewModel extends ChangeNotifier {
     _errorMessage = null;
 
     try {
-      final result = await _acceptCandidateUseCase.execute(candidateId);
       // Remover el candidato de la lista
       _candidates.removeWhere((c) => c.id == candidateId);
       notifyListeners();

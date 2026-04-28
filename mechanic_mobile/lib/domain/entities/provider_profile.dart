@@ -97,5 +97,5 @@ class ProviderService {
     required this.isActive,
   });
 
-  String get priceRange => '\$${priceEstimateMin} - \$${priceEstimateMax}';
+  String get priceRange => '\$$priceEstimateMin - \$$priceEstimateMax';
 }

@@ -156,7 +156,7 @@ class _IncidentsPageState extends State<IncidentsPage> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: selectedCategory,
+                  initialValue: selectedCategory,
                   decoration: const InputDecoration(
                     labelText: 'Categoría',
                     prefixIcon: Icon(Icons.category),
@@ -172,7 +172,7 @@ class _IncidentsPageState extends State<IncidentsPage> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: selectedPriority,
+                  initialValue: selectedPriority,
                   decoration: const InputDecoration(
                     labelText: 'Prioridad',
                     prefixIcon: Icon(Icons.priority_high),
@@ -450,7 +450,7 @@ class _IncidentsPageState extends State<IncidentsPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: _getStatusColor(incident.status).withOpacity(0.3),
+          color: _getStatusColor(incident.status).withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -469,7 +469,9 @@ class _IncidentsPageState extends State<IncidentsPage> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(incident.status).withOpacity(0.1),
+                      color: _getStatusColor(
+                        incident.status,
+                      ).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -500,7 +502,7 @@ class _IncidentsPageState extends State<IncidentsPage> {
                           decoration: BoxDecoration(
                             color: _getStatusColor(
                               incident.status,
-                            ).withOpacity(0.1),
+                            ).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(

@@ -1,7 +1,4 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-
 import '../../domain/entities/user.dart';
 import '../../domain/entities/vehicle.dart';
 
