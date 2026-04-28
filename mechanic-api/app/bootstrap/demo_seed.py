@@ -70,6 +70,9 @@ from app.services.tracking.models import IncidentResponderLocationPing
 from app.bootstrap.demo_seed_step_05 import (
     seed_step_05_billing_subscriptions_notifications_and_audit,
 )
+from app.bootstrap.demo_seed_step_06_technician_mobile import (
+    seed_step_06_technician_mobile_users,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -1421,6 +1424,11 @@ def seed_demo_data(db: Session) -> None:
         "step_05_billing_subscriptions_notifications_and_audit",
         seed_step_05_billing_subscriptions_notifications_and_audit,
         ),
+        (
+            "step_06_technician_mobile_users",
+            seed_step_06_technician_mobile_users,
+        ),
+        
     ]
 
     for step_name, step_function in seed_steps:
