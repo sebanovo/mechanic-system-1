@@ -111,6 +111,22 @@ export const routes: Routes = [
 			},
 
 			{
+				path: "incidents-me",
+				loadChildren: () =>
+					import("./features/provider-incidents/incident.routes").then(
+						m => m.INCIDENT_ROUTES
+					),
+			},
+
+			{
+				path: "candidates",
+				loadChildren: () =>
+					import("./features/candidates/candidate.routes").then(
+						m => m.CANDIDATE_ROUTES
+					),
+			},
+
+			{
 				path: "**",
 				loadComponent: () =>
 					import("./features/not-found/pages/private-not-found-page/private-not-found-page").then(

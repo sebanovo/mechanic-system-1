@@ -8,8 +8,10 @@ import {
 import { Router, RouterLink } from "@angular/router";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import {
+	lucideBriefcase,
 	lucideSettings,
 	lucideShield,
+	lucideTarget,
 	lucideUsers,
 	lucideX,
 } from "@ng-icons/lucide";
@@ -67,6 +69,8 @@ import { AppLayoutState } from "../../services/app-layout.state";
 			remixBuilding2Fill,
 			remixBuilding2Line,
 			remixTeamLine,
+			lucideBriefcase,
+			lucideTarget,
 		}),
 	],
 	templateUrl: "./app-sidebar.html",
@@ -130,6 +134,8 @@ export class AppSidebar {
 			"ri-team-line": "remixTeamLine",
 			"ri-building-line": "remixBuildingLine",
 			"ri-vip-crown-line": "remixVipCrownLine",
+			briefcase: "lucideBriefcase",
+			target: "lucideTarget",
 			users: "lucideUsers",
 			shield: "lucideShield",
 			"ri-key-line": "remixKeyLine",

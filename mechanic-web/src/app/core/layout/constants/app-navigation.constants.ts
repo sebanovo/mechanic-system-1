@@ -103,13 +103,31 @@ export const APP_NAVIGATION: AppNavigationItem[] = [
 		label: "Operación",
 	},
 	{
+		label: "Trabajo aceptado",
+		route: "/app/incidents-me",
+		icon: {
+			type: "lucide",
+			name: "briefcase",
+		},
+		allowedRoles: ["PROVIDER_ADMIN"],
+	},
+	{
 		label: "Incidentes",
 		route: "/app/incidents",
 		icon: {
 			type: "remix",
 			name: "ri-dashboard-line",
 		},
-		allowedRoles: ["CLIENT", "PROVIDER_ADMIN", "PLATFORM_ADMIN"],
+		allowedRoles: ["CLIENT", "PLATFORM_ADMIN"],
+	},
+	{
+		label: "Candidatos",
+		route: "/app/candidates",
+		icon: {
+			type: "lucide",
+			name: "target",
+		},
+		allowedRoles: ["PROVIDER_ADMIN"],
 	},
 	{
 		label: "Evidencias",
