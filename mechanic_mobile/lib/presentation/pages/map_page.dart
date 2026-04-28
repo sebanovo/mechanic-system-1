@@ -17,8 +17,8 @@ class MapPage extends StatelessWidget {
         options: MapOptions(
           initialCenter: LatLng(-17.7833, -63.1821), // Santa Cruz de la Sierra
           initialZoom: 15,
-          minZoom: 14, // ✅ Zoom mínimo (no dejar alejar más de 10)
-          maxZoom: 16, // ✅ Zoom máximo (opcional)
+          minZoom: 12,
+          maxZoom: 18,
         ),
         children: [
           TileLayer(
