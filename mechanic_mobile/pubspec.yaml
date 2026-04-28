@@ -23,6 +23,10 @@ dependencies:
   http_parser: ^4.1.2 #(Para serializar formatos de image/audio/etc)
   firebase_core: ^4.7.0
   firebase_messaging: ^16.2.0 #(Para notificaciones push)
+  flutter_map: ^8.3.0 #(Para maás en flutter alternativa a google_maps)
+  geolocator: ^14.0.2 #(Obtener coordenadas del dispositivo)
+  latlong2: ^0.9.1 #(Para calcular latitud y longitud)
+
 
 dev_dependencies:
   flutter_test:

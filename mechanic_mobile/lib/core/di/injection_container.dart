@@ -46,7 +46,6 @@ import 'package:mechanic_mobile/infrastructure/datasources/admin_incident_remote
 import 'package:mechanic_mobile/infrastructure/datasources/catalog_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/evidence_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/incident_remote_data_source.dart';
-import 'package:mechanic_mobile/infrastructure/datasources/mock_service_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/notification_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/provider_admin_remote_data_source.dart';
 import 'package:mechanic_mobile/infrastructure/datasources/provider_assignment_remote_data_source.dart';
@@ -64,7 +63,6 @@ import 'package:mechanic_mobile/infrastructure/repositories/provider_admin_repos
 import 'package:mechanic_mobile/infrastructure/repositories/provider_assignment_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/provider_operation_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/provider_repository_impl.dart';
-import 'package:mechanic_mobile/infrastructure/repositories/service_request_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/technician_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/tracking_repository_impl.dart';
 import 'package:mechanic_mobile/infrastructure/repositories/vehicle_repository_impl.dart';
@@ -128,12 +126,6 @@ Future<void> init() async {
     () => AuthRepositoryImpl(sl(), sl()),
   );
 
-  sl.registerLazySingleton<MockServiceDataSource>(
-    () => MockServiceDataSourceImpl(),
-  );
-  sl.registerLazySingleton<ServiceRequestRepository>(
-    () => ServiceRequestRepositoryImpl(remoteDataSource: sl()),
-  );
   sl.registerLazySingleton<VehicleRepository>(
     () => VehicleRepositoryImpl(sl()),
   );

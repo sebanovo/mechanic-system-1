@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mechanic_mobile/core/di/injection_container.dart';
 import 'package:mechanic_mobile/domain/usecases/create_incident_usecase.dart';
 import 'package:mechanic_mobile/presentation/viewmodels/incidents_viewmodel.dart';
@@ -81,8 +82,65 @@ class _CreateIncidentPageState extends State<CreateIncidentPage> {
     );
   }
 
+  /// Método actualizado usando la API correcta de geolocator
   Future<void> _getCurrentLocation() async {
-    _showSnackBar('Obtener ubicación actual (implementar GPS)');
+    try {
+      // Verificar si los servicios de ubicación están activos
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _showSnackBar(
+          'Los servicios de ubicación están desactivados. Actívalos para continuar.',
+          isError: true,
+        );
+        return;
+      }
+
+      // Verificar permisos
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          _showSnackBar(
+            'Permiso de ubicación denegado. No se puede obtener la ubicación.',
+            isError: true,
+          );
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        _showSnackBar(
+          'Permiso de ubicación denegado permanentemente. Ve a ajustes de la app para habilitarlo.',
+          isError: true,
+        );
+        return;
+      }
+
+      _showSnackBar('Obteniendo ubicación...');
+
+      // Configuración de precisión
+      const locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 100, // metros
+      );
+
+      // Obtener posición actual con la API correcta
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings: locationSettings,
+      );
+
+      // Actualizar campos de latitud y longitud
+      setState(() {
+        _latitudeController.text = position.latitude.toStringAsFixed(6);
+        _longitudeController.text = position.longitude.toStringAsFixed(6);
+      });
+
+      _showSnackBar(
+        'Ubicación obtenida: ${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}',
+      );
+    } catch (e) {
+      _showSnackBar('Error al obtener ubicación: $e', isError: true);
+    }
   }
 
   Future<void> _submitForm() async {

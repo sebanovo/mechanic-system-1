@@ -11,6 +11,7 @@ import 'package:mechanic_mobile/presentation/pages/create_incident_page.dart';
 import 'package:mechanic_mobile/presentation/pages/devices_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incident_detail_page.dart';
 import 'package:mechanic_mobile/presentation/pages/incidents_page.dart';
+import 'package:mechanic_mobile/presentation/pages/map_page.dart';
 import 'package:mechanic_mobile/presentation/pages/platform_tracking_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_active_operations_page.dart';
 import 'package:mechanic_mobile/presentation/pages/provider_available_requests_page.dart';
@@ -150,6 +151,12 @@ final appRouter = GoRouter(
       path: '/admin/providers',
       name: 'admin-providers',
       builder: (context, state) => const AdminProvidersPage(),
+    ),
+
+    GoRoute(
+      path: '/map',
+      name: 'map',
+      builder: (context, state) => const MapPage(),
     ),
 
     GoRoute(
