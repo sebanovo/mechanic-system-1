@@ -28,16 +28,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> <!-- Opcional: para ubicación en segundo plano -->
 
-    <!-- Para Android 13+ (API 33+) necesitas este permiso para notificaciones -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    
-    <!-- Para recibir notificaciones después de reiniciar el dispositivo -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    
-    <!-- Para notificaciones en pantalla completa (opcional) -->
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-
-
     <!-- Para que la app se inicie con el dispositivo (recepción de notificaciones) -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 

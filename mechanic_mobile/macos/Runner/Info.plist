@@ -28,11 +28,5 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-
-	<!-- Agregar los siguientes permisos: -->
-
-	<!-- Permisos para speech_to_text -->
-	<!-- Permisos para image_picker -->
-	<!-- Recibir Notificaciones -->
 </dict>
 </plist>

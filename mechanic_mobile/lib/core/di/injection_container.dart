@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:mechanic_mobile/domain/repositories/service_request_repository.dart';
 import 'package:mechanic_mobile/domain/repositories/vehicle_repository.dart';
 import 'package:mechanic_mobile/domain/usecases/accept_candidate_usecase.dart';
 import 'package:mechanic_mobile/domain/usecases/add_file_evidence_usecase.dart';
